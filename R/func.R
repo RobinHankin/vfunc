@@ -12,18 +12,18 @@ setGeneric("as.vf", function(x){standardGeneric("as.vf")})
 setMethod("as.vf", signature(x = "function"),function(x){as(x,"vf")})
 setMethod("as.vf", signature(x = "vf"),function(x){x})
 
-`.vf.negative`   <- function(e1){as.vf(function(x){ -as.function(e1)(x)})}
-`.vf.reciprocal` <- function(e1){as.vf(function(x){1/as.function(e1)(x)})}
+`.vf.negative`   <- function(e1){as.vf(function(...){ -as.function(e1)(...)})}
+`.vf.reciprocal` <- function(e1){as.vf(function(...){1/as.function(e1)(...)})}
 
-`.vf.vf.add`   <- function(e1, e2){as.vf(function(x){as.function(e1)(x) + as.function(e2)(x)})}
-`.vf.vf.mult`  <- function(e1, e2){as.vf(function(x){as.function(e1)(x) * as.function(e2)(x)})}
-`.vf.vf.power` <- function(e1, e2){as.vf(function(x){as.function(e1)(x) ^ as.function(e2)(x)})}
+`.vf.vf.add`   <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + as.function(e2)(...)})}
+`.vf.vf.mult`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * as.function(e2)(...)})}
+`.vf.vf.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ as.function(e2)(...)})}
 
-`.vf.numeric.add`  <- function(e1, e2){as.vf(function(x){as.function(e1)(x) + e2})}
-`.vf.numeric.mult` <- function(e1, e2){as.vf(function(x){as.function(e1)(x) * e2})}
+`.vf.numeric.add`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + e2})}
+`.vf.numeric.mult` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * e2})}
 
-`.vf.numeric.power` <- function(e1, e2){as.vf(function(x){as.function(e1)(x) ^ e2})}
-`.numeric.vf.power` <- function(e1, e2){as.vf(function(x){e1 ^ as.function(e2)(x)})}
+`.vf.numeric.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ e2})}
+`.numeric.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ as.function(e2)(...)})}
 
 `.vf.vf.arith` <- function(e1,e2){ # e1: vf, e2: vf
     e1 <- as.vf(e1)
@@ -81,28 +81,27 @@ setMethod("Arith", signature(e1 = "vf", e2="missing"),
           })
 
 
-`.vf.vf.add`   <- function(e1, e2){as.vf(function(x){as.function(e1)(x) + as.function(e2)(x)})}
 
-`.vf.vf.eq` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) == as.function(e2)(x)})}
-`.vf.vf.gt` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) >  as.function(e2)(x)})}
-`.vf.vf.ge` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) >= as.function(e2)(x)})}
-`.vf.vf.lt` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) <  as.function(e2)(x)})}
-`.vf.vf.le` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) <= as.function(e2)(x)})}
-`.vf.vf.ne` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) != as.function(e2)(x)})}
+`.vf.vf.eq` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) == as.function(e2)(...)})}
+`.vf.vf.gt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >  as.function(e2)(...)})}
+`.vf.vf.ge` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >= as.function(e2)(...)})}
+`.vf.vf.lt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <  as.function(e2)(...)})}
+`.vf.vf.le` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <= as.function(e2)(...)})}
+`.vf.vf.ne` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) != as.function(e2)(...)})}
 
-`.vf.numeric.eq` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) == e2})}
-`.vf.numeric.gt` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) >  e2})}
-`.vf.numeric.ge` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) >= e2})}
-`.vf.numeric.lt` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) <  e2})}
-`.vf.numeric.le` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) <= e2})}
-`.vf.numeric.ne` <-  function(e1, e2){as.vf(function(x){as.function(e1)(x) != e2})}
+`.vf.numeric.eq` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) == e2})}
+`.vf.numeric.gt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >  e2})}
+`.vf.numeric.ge` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >= e2})}
+`.vf.numeric.lt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <  e2})}
+`.vf.numeric.le` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <= e2})}
+`.vf.numeric.ne` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) != e2})}
 
-`.numeric.vf.eq` <-  function(e1, e2){as.vf(function(x){e1 == as.function(e2)(x)})}
-`.numeric.vf.gt` <-  function(e1, e2){as.vf(function(x){e1 >  as.function(e2)(x)})}
-`.numeric.vf.ge` <-  function(e1, e2){as.vf(function(x){e1 >= as.function(e2)(x)})}
-`.numeric.vf.lt` <-  function(e1, e2){as.vf(function(x){e1 <  as.function(e2)(x)})}
-`.numeric.vf.le` <-  function(e1, e2){as.vf(function(x){e1 <= as.function(e2)(x)})}
-`.numeric.vf.ne` <-  function(e1, e2){as.vf(function(x){e1 != as.function(e2)(x)})}
+`.numeric.vf.eq` <-  function(e1, e2){as.vf(function(...){e1 == as.function(e2)(...)})}
+`.numeric.vf.gt` <-  function(e1, e2){as.vf(function(...){e1 >  as.function(e2)(...)})}
+`.numeric.vf.ge` <-  function(e1, e2){as.vf(function(...){e1 >= as.function(e2)(...)})}
+`.numeric.vf.lt` <-  function(e1, e2){as.vf(function(...){e1 <  as.function(e2)(...)})}
+`.numeric.vf.le` <-  function(e1, e2){as.vf(function(...){e1 <= as.function(e2)(...)})}
+`.numeric.vf.ne` <-  function(e1, e2){as.vf(function(...){e1 != as.function(e2)(...)})}
 
 `.vf.vf.compare`   <- function(e1, e2){
     e1 <- as.vf(e1)
