@@ -189,3 +189,5 @@ setMethod("Math", "vf",
                      )
           })
 
+`comp` <- function(f,g){as.vf(function(...){as.function(f)(as.function(g)(...))})}
+`%o%`  <- function(f,g){comp(f,g)}

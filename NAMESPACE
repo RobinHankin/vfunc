@@ -1,4 +1,4 @@
-export("as.function", "as.vf")
+export("as.function", "as.vf", "comp", "%o%")
 exportMethods(
     "as.function",
     "as.vf"
