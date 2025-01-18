@@ -1,0 +1,12 @@
+export("as.function", "as.vf")
+exportMethods(
+    "Arith",
+    "as.function",
+    "as.vf",
+    "coerce",
+    "Compare",
+    "Math" 
+)
+exportClasses(
+    "vf" 
+)
