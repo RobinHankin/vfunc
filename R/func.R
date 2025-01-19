@@ -4,7 +4,7 @@ setClass("vf", slots = c(x = "function") )
 
 setAs("function", "vf", function(from){new("vf", x = from)})  # coerces from function to vf
 setAs("vf", "function", function(from){from@x})               # coerces from vf to function
-setAs("numeric", "vf",function(from){"not allowed"})
+setAs("ANY", "vf",function(from){"not allowed"})
 
 setMethod("as.function", signature(x = "vf"),function(x){as(x, "function")})
 
@@ -19,11 +19,11 @@ setMethod("as.vf", signature(x = "vf"),function(x){x})
 `.vf.vf.mult`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * as.function(e2)(...)})}
 `.vf.vf.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ as.function(e2)(...)})}
 
-`.vf.numeric.add`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + e2})}
-`.vf.numeric.mult` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * e2})}
+`.vf.ANY.add`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + e2})}
+`.vf.ANY.mult` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * e2})}
 
-`.vf.numeric.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ e2})}
-`.numeric.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ as.function(e2)(...)})}
+`.vf.ANY.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ e2})}
+`.ANY.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ as.function(e2)(...)})}
 
 `.vf.vf.arith` <- function(e1,e2){ # e1: vf, e2: vf
     e1 <- as.vf(e1)
@@ -37,25 +37,25 @@ setMethod("as.vf", signature(x = "vf"),function(x){x})
            stop(gettextf("binary operator %s not implemented on vf objects", dQuote(.Generic)))
            ) }
 
-`.vf.numeric.arith` <- function(e1,e2){ # e1: vf, e2: numeric
+`.vf.ANY.arith` <- function(e1,e2){ # e1: vf, e2: ANY
     e1 <- as.vf(e1)
     switch(.Generic,
-           "+" = .vf.numeric.add  (e1, e2),
-           "-" = .vf.numeric.add  (e1, -e2),
-           "*" = .vf.numeric.mult (e1, e2),
-           "/" = .vf.numeric.mult (e1, 1/e2),
-           "^" = .vf.numeric.power(e1, e2),
+           "+" = .vf.ANY.add  (e1, e2),
+           "-" = .vf.ANY.add  (e1, -e2),
+           "*" = .vf.ANY.mult (e1, e2),
+           "/" = .vf.ANY.mult (e1, 1/e2),
+           "^" = .vf.ANY.power(e1, e2),
            stop(gettextf("binary operator %s not implemented on vf objects", dQuote(.Generic)))
            ) }
 
-`.numeric.vf.arith` <- function(e1,e2){ # e1: numeric, e2: vf
+`.ANY.vf.arith` <- function(e1,e2){ # e1: ANY, e2: vf
     e2 <- as.vf(e2)
     switch(.Generic,
-           "+" = .vf.numeric.add  ( e2, e1),
-           "-" = .vf.numeric.add  (-e2, e1),
-           "*" = .vf.numeric.mult ( e2, e1),
-           "/" = .vf.numeric.mult (.vf.reciprocal(e2), e1),
-           "^" = .numeric.vf.power(e1, e2),
+           "+" = .vf.ANY.add  ( e2, e1),
+           "-" = .vf.ANY.add  (-e2, e1),
+           "*" = .vf.ANY.mult ( e2, e1),
+           "/" = .vf.ANY.mult (.vf.reciprocal(e2), e1),
+           "^" = .ANY.vf.power(e1, e2),
            stop(gettextf("binary operator %s not implemented on vf objects", dQuote(.Generic)))
            ) }
 
@@ -63,13 +63,12 @@ setMethod("Arith", signature(e1 = "vf"      , e2 = "vf"      ), .vf.vf.arith)
 setMethod("Arith", signature(e1 = "vf"      , e2 = "function"), .vf.vf.arith)
 setMethod("Arith", signature(e1 = "function", e2 = "vf"      ), .vf.vf.arith)
 
-## Following line [and similar lines for function/numeric etc] would
-## be desirable in this context but does not work as 'function' and
-## 'numeric' are sealed classes
+## Following line [and similar lines for function/ANY etc] would
+## be desirable in this context but does not work as 'function' is a sealed class
 ## setMethod("Arith", signature(e1 = "function", e2 = "function"), .vf.arith        )
 
-setMethod("Arith", signature(e1 = "vf"      , e2 = "numeric" ), .vf.numeric.arith)
-setMethod("Arith", signature(e1 = "numeric" , e2 = "vf"      ), .numeric.vf.arith)
+setMethod("Arith", signature(e1 = "vf"      , e2 = "ANY" ), .vf.ANY.arith)
+setMethod("Arith", signature(e1 = "ANY" , e2 = "vf"      ), .ANY.vf.arith)
 
 setMethod("Arith", signature(e1 = "vf", e2="missing"),
           function(e1, e2){
@@ -89,19 +88,19 @@ setMethod("Arith", signature(e1 = "vf", e2="missing"),
 `.vf.vf.le` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <= as.function(e2)(...)})}
 `.vf.vf.ne` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) != as.function(e2)(...)})}
 
-`.vf.numeric.eq` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) == e2})}
-`.vf.numeric.gt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >  e2})}
-`.vf.numeric.ge` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >= e2})}
-`.vf.numeric.lt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <  e2})}
-`.vf.numeric.le` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <= e2})}
-`.vf.numeric.ne` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) != e2})}
+`.vf.ANY.eq` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) == e2})}
+`.vf.ANY.gt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >  e2})}
+`.vf.ANY.ge` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >= e2})}
+`.vf.ANY.lt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <  e2})}
+`.vf.ANY.le` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) <= e2})}
+`.vf.ANY.ne` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) != e2})}
 
-`.numeric.vf.eq` <-  function(e1, e2){as.vf(function(...){e1 == as.function(e2)(...)})}
-`.numeric.vf.gt` <-  function(e1, e2){as.vf(function(...){e1 >  as.function(e2)(...)})}
-`.numeric.vf.ge` <-  function(e1, e2){as.vf(function(...){e1 >= as.function(e2)(...)})}
-`.numeric.vf.lt` <-  function(e1, e2){as.vf(function(...){e1 <  as.function(e2)(...)})}
-`.numeric.vf.le` <-  function(e1, e2){as.vf(function(...){e1 <= as.function(e2)(...)})}
-`.numeric.vf.ne` <-  function(e1, e2){as.vf(function(...){e1 != as.function(e2)(...)})}
+`.ANY.vf.eq` <-  function(e1, e2){as.vf(function(...){e1 == as.function(e2)(...)})}
+`.ANY.vf.gt` <-  function(e1, e2){as.vf(function(...){e1 >  as.function(e2)(...)})}
+`.ANY.vf.ge` <-  function(e1, e2){as.vf(function(...){e1 >= as.function(e2)(...)})}
+`.ANY.vf.lt` <-  function(e1, e2){as.vf(function(...){e1 <  as.function(e2)(...)})}
+`.ANY.vf.le` <-  function(e1, e2){as.vf(function(...){e1 <= as.function(e2)(...)})}
+`.ANY.vf.ne` <-  function(e1, e2){as.vf(function(...){e1 != as.function(e2)(...)})}
 
 `.vf.vf.compare`   <- function(e1, e2){
     e1 <- as.vf(e1)
@@ -116,35 +115,35 @@ setMethod("Arith", signature(e1 = "vf", e2="missing"),
            stop(gettextf("Comparison operator %s not implemented on vf objects", dQuote(.Generic)))
            )}
 
-`.vf.numeric.compare`   <- function(e1, e2){
+`.vf.ANY.compare`   <- function(e1, e2){
     e1 <- as.vf(e1)
     switch(.Generic,
-           "==" = .vf.numeric.eq(e1, e2),
-           ">"  = .vf.numeric.gt(e1, e2),
-           ">=" = .vf.numeric.ge(e1, e2),
-           "<"  = .vf.numeric.lt(e1, e2),
-           "<=" = .vf.numeric.le(e1, e2),
-           "!=" = .vf.numeric.ne(e1, e2),
+           "==" = .vf.ANY.eq(e1, e2),
+           ">"  = .vf.ANY.gt(e1, e2),
+           ">=" = .vf.ANY.ge(e1, e2),
+           "<"  = .vf.ANY.lt(e1, e2),
+           "<=" = .vf.ANY.le(e1, e2),
+           "!=" = .vf.ANY.ne(e1, e2),
            stop(gettextf("Comparison operator %s not implemented on vf objects", dQuote(.Generic)))
            )}
 
-`.numeric.vf.compare`   <- function(e1, e2){
+`.ANY.vf.compare`   <- function(e1, e2){
     e2 <- as.vf(e2)
     switch(.Generic,
-           "==" = .numeric.vf.eq(e1, e2),
-           ">"  = .numeric.vf.gt(e1, e2),
-           ">=" = .numeric.vf.ge(e1, e2),
-           "<"  = .numeric.vf.lt(e1, e2),
-           "<=" = .numeric.vf.le(e1, e2),
-           "!=" = .numeric.vf.ne(e1, e2),
+           "==" = .ANY.vf.eq(e1, e2),
+           ">"  = .ANY.vf.gt(e1, e2),
+           ">=" = .ANY.vf.ge(e1, e2),
+           "<"  = .ANY.vf.lt(e1, e2),
+           "<=" = .ANY.vf.le(e1, e2),
+           "!=" = .ANY.vf.ne(e1, e2),
            stop(gettextf("Comparison operator %s not implemented on vf objects", dQuote(.Generic)))
            )}
 
 setMethod("Compare", signature(e1="vf"      , e2="vf"      ), .vf.vf.compare     )
 setMethod("Compare", signature(e1="vf"      , e2="function"), .vf.vf.compare     )
 setMethod("Compare", signature(e1="function", e2="vf"      ), .vf.vf.compare     )
-setMethod("Compare", signature(e1="vf"      , e2="numeric" ), .vf.numeric.compare)
-setMethod("Compare", signature(e1="numeric" , e2="vf"      ), .numeric.vf.compare)
+setMethod("Compare", signature(e1="vf"      , e2="ANY" ), .vf.ANY.compare)
+setMethod("Compare", signature(e1="ANY" , e2="vf"      ), .ANY.vf.compare)
 
 setMethod("Math", "vf",
           function(x){
