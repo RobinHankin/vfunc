@@ -69,8 +69,8 @@ setMethod("Arith", signature(e1 = "function", e2 = "vf"      ), .vf.vf.arith)
 ## be desirable in this context but does not work as 'function' is a sealed class
 ## setMethod("Arith", signature(e1 = "function", e2 = "function"), .vf.arith        )
 
-setMethod("Arith", signature(e1 = "vf"      , e2 = "ANY" ), .vf.ANY.arith)
-setMethod("Arith", signature(e1 = "ANY" , e2 = "vf"      ), .ANY.vf.arith)
+setMethod("Arith", signature(e1 = "vf" , e2 = "ANY"     ), .vf.ANY.arith)
+setMethod("Arith", signature(e1 = "ANY", e2 = "vf"      ), .ANY.vf.arith)
 
 setMethod("Arith", signature(e1 = "vf", e2="missing"),
           function(e1, e2){
@@ -141,52 +141,9 @@ setMethod("Arith", signature(e1 = "vf", e2="missing"),
            stop(gettextf("Comparison operator %s not implemented on vf objects", dQuote(.Generic)))
            )}
 
-setMethod("Compare", signature(e1="vf"      , e2="vf"      ), .vf.vf.compare     )
-setMethod("Compare", signature(e1="vf"      , e2="function"), .vf.vf.compare     )
-setMethod("Compare", signature(e1="function", e2="vf"      ), .vf.vf.compare     )
-setMethod("Compare", signature(e1="vf"      , e2="ANY" ), .vf.ANY.compare)
-setMethod("Compare", signature(e1="ANY" , e2="vf"      ), .ANY.vf.compare)
-
-setMethod("Math", "vf",
-          function(x){
-              switch(.Generic,
-                     abs      = as.vf(function(o){abs(as.function(x)(o))}),
-                     abs      = as.vf(function(o){abs(as.function(x)(o))}),
-                     sign     = as.vf(function(o){sign(as.function(x)(o))}),
-                     sqrt     = as.vf(function(o){sqrt(as.function(x)(o))}),
-                     ceiling  = as.vf(function(o){ceiling(as.function(x)(o))}),
-                     floor    = as.vf(function(o){floor(as.function(x)(o))}),
-                     trunc    = as.vf(function(o){trunc(as.function(x)(o))}),
-                     cummax   = as.vf(function(o){cummax(as.function(x)(o))}),
-                     cummin   = as.vf(function(o){cummin(as.function(x)(o))}),
-                     cumprod  = as.vf(function(o){cumprod(as.function(x)(o))}),
-                     cumsum   = as.vf(function(o){cumsum(as.function(x)(o))}),
-                     log      = as.vf(function(o){log(as.function(x)(o))}),
-                     log10    = as.vf(function(o){log10(as.function(x)(o))}),
-                     log2     = as.vf(function(o){log2(as.function(x)(o))}),
-                     log1p    = as.vf(function(o){log1p(as.function(x)(o))}),
-                     acos     = as.vf(function(o){acos(as.function(x)(o))}),
-                     acosh    = as.vf(function(o){acosh(as.function(x)(o))}),
-                     asin     = as.vf(function(o){asin(as.function(x)(o))}),
-                     asinh    = as.vf(function(o){asinh(as.function(x)(o))}),
-                     atan     = as.vf(function(o){atan(as.function(x)(o))}),
-                     atanh    = as.vf(function(o){atanh(as.function(x)(o))}),
-                     exp      = as.vf(function(o){exp(as.function(x)(o))}),
-                     expm1    = as.vf(function(o){expm1(as.function(x)(o))}),
-                     cos      = as.vf(function(o){cos(as.function(x)(o))}),
-                     cosh     = as.vf(function(o){cosh(as.function(x)(o))}),
-                     cospi    = as.vf(function(o){cospi(as.function(x)(o))}),
-                     sin      = as.vf(function(o){sin(as.function(x)(o))}),
-                     sinh     = as.vf(function(o){sinh(as.function(x)(o))}),
-                     sinpi    = as.vf(function(o){sinpi(as.function(x)(o))}),
-                     tan      = as.vf(function(o){tan(as.function(x)(o))}),
-                     tanh     = as.vf(function(o){tanh(as.function(x)(o))}),
-                     tanpi    = as.vf(function(o){tanpi(as.function(x)(o))}),
-                     gamma    = as.vf(function(o){gamma(as.function(x)(o))}),
-                     lgamma   = as.vf(function(o){lgamma(as.function(x)(o))}),
-                     digamma  = as.vf(function(o){digamma(as.function(x)(o))}),
-                     trigamma = as.vf(function(o){trigamma(as.function(x)(o))}),
-                     stop("not defined")
-                     )
-          })
+setMethod("Compare", signature(e1="vf"      , e2="vf"      ), .vf.vf.compare )
+setMethod("Compare", signature(e1="vf"      , e2="function"), .vf.vf.compare )
+setMethod("Compare", signature(e1="function", e2="vf"      ), .vf.vf.compare )
+setMethod("Compare", signature(e1="vf"      , e2="ANY"     ), .vf.ANY.compare)
+setMethod("Compare", signature(e1="ANY"     , e2="vf"      ), .ANY.vf.compare)
 
