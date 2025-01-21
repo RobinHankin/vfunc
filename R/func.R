@@ -1,10 +1,12 @@
 ## The S4 class "function" is a sealed class, it can't be modified.
 
-setClass("vf", slots = c(x = "function") )
+setClass("vf", slots = c(.Data = "function") )
 
-setAs("function", "vf", function(from){new("vf", x = from)})  # coerces from function to vf
-setAs("vf", "function", function(from){from@x})               # coerces from vf to function
-setAs("ANY", "vf",function(from){"not allowed"})
+
+setAs("function", "vf", function(from){new("vf", .Data = from)})  # coerces from function to vf
+setAs("vf", "function", function(from){from@.Data})               # coerces from vf to function
+setAs("numeric", "vf",function(from){"not allowed"})
+
 
 setMethod("as.function", signature(x = "vf"),function(x){as(x, "function")})
 
@@ -188,5 +190,3 @@ setMethod("Math", "vf",
                      )
           })
 
-`comp` <- function(f,g){as.vf(function(...){as.function(f)(as.function(g)(...))})}
-`%o%`  <- function(f,g){comp(f,g)}
