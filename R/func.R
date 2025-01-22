@@ -147,3 +147,10 @@ setMethod("Compare", signature(e1="function", e2="vf"      ), .vf.vf.compare )
 setMethod("Compare", signature(e1="vf"      , e2="ANY"     ), .vf.ANY.compare)
 setMethod("Compare", signature(e1="ANY"     , e2="vf"      ), .ANY.vf.compare)
 
+`comp` <- function(f,g){as.vf(function(...){as.function(f)(as.function(g)(...))})}
+`%o%`  <- function(f,g){comp(f,g)}
+
+
+sin <- as.vf(function(x){.Primitive("sin")})
+setMethod("sin","vf", function(x){as.vf(function(o){base::sin(x(o))})})
+cos <- as.vf(function(x){base::cos(x)})
