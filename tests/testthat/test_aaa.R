@@ -49,22 +49,21 @@ test_that("Test suite aaa.R",{
     x <- 1.2
     y <- 1.7
     z <- 4.3
-    expect_close((f + g)(x,y,z), f(x,y,z) + g(x,y,z))
-
     expect_close(
-    ((f + g)*(f + 4 - 2*f*g))(x,y,z),
-    (f(x,y,z) + g(x,y,z))*(f(x,y,z) + 4 - 2*f(x,y,z)*g(x,y,z))
+    (f + g)(x, y, z),
+    f(x, y, z) + g(x, y, z)
     )
-
+    
     expect_close(
-    ((f + g)*(f + 4 - 2*f*g))(x/z,y+z,z-x^2+1),
-    (f(x/z,y+z,z-x^2+1) + g(x/z,y+z,z-x^2+1))*(f(x/z,y+z,z-x^2+1) + 4 - 2*f(x/z,y+z,z-x^2+1)*g(x/z,y+z,z-x^2+1))
+    ((f + g)*(f + 4 - 2*f*g))(x, y, z),
+    (f(x, y, z) + g(x, y, z))*(f(x, y, z) + 4 - 2*f(x, y, z)*g(x, y, z))
     )
-
+    
     expect_close(
-    ((f + g)*(f + 4 - 2*f*g))(x/z,y+z,z-x^2+f(x,x,y)),
-    (f(x/z,y+z,z - x^2 + f(x,x,y)) + g(x/z, y+z, z - x^2 + f(x,x,y))) * (f(x/z,y+z,z-x^2 + f(x,x,y)) + 4 - 2*f(x/z,y+z,z-x^2 + f(x,x,y))*g(x/z,y+z,z-x^2+ f(x,x,y)))
+    ((f + g)*(f + 4 - 2*f*g))(x/z, y+z, z-x^2+1),
+    (f(x/z, y+z, z-x^2+1) + g(x/z, y+z, z-x^2+1))*(f(x/z, y+z, z-x^2+1) + 4 - 2*f(x/z, y+z, z-x^2+1) * g(x/z, y+z, z-x^2+1))
     )
-
+    
+    
     
 })
