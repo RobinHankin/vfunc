@@ -4,14 +4,14 @@ setClass("vf", slots = c(.Data = "function") )
 
 setAs("function", "vf", function(from){new("vf", .Data = from)})  # coerces from function to vf
 setAs("vf", "function", function(from){from@.Data})               # coerces from vf to function
-setAs("numeric", "vf",function(from){"not allowed"})
+setAs("numeric", "vf", function(from){"not allowed"})
 
 
-setMethod("as.function", signature(x = "vf"),function(x){as(x, "function")})
+setMethod("as.function", signature(x = "vf"), function(x){as(x, "function")})
 
 setGeneric("as.vf", function(x){standardGeneric("as.vf")})
-setMethod("as.vf", signature(x = "function"),function(x){as(x,"vf")})
-setMethod("as.vf", signature(x = "vf"),function(x){x})
+setMethod("as.vf", signature(x = "function"), function(x){as(x, "vf")})
+setMethod("as.vf", signature(x = "vf"), function(x){x})
 
 `.vf.negative`   <- function(e1){as.vf(function(...){ -as.function(e1)(...)})}
 `.vf.reciprocal` <- function(e1){as.vf(function(...){1/as.function(e1)(...)})}
@@ -79,8 +79,6 @@ setMethod("Arith", signature(e1 = "vf", e2="missing"),
                      stop(gettextf("unary operator %s not implemented on vf objects", dQuote(.Generic)))
                      )
           })
-
-
 
 `.vf.vf.eq` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) == as.function(e2)(...)})}
 `.vf.vf.gt` <-  function(e1, e2){as.vf(function(...){as.function(e1)(...) >  as.function(e2)(...)})}
