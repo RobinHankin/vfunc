@@ -64,6 +64,24 @@ test_that("Test suite aaa.R",{
     (f(x/z, y+z, z-x^2+1) + g(x/z, y+z, z-x^2+1))*(f(x/z, y+z, z-x^2+1) + 4 - 2*f(x/z, y+z, z-x^2+1) * g(x/z, y+z, z-x^2+1))
     )
     
+    expect_close(
+    ((f + g)*(f + 4 - 2*f*g))(x/z, y+z, z - x^2 + f(x, x, y)),
+    (f(x/z,y+z,z - x^2 + f(x, x, y)) + g(x/z, y+z, z - x^2 + f(x, x, y))) * (f(x/z, y+z, z-x^2 + f(x, x, y)) + 4 - 2*f(x/z, y+z, z-x^2 + f(x, x, y))*g(x/z, y+z, z-x^2+ f(x, x, y)))
+    )
     
+    expect_close(
+    ((f + g)*(f + 1:4 - 2*f*g))(x/z, y+z, z - x^2 + f(x, x, y)),
+    (f(x/z,y+z,z - x^2 + f(x, x, y)) + g(x/z, y+z, z - x^2 + f(x, x, y))) * (f(x/z, y+z, z-x^2 + f(x, x, y)) + 1:4 - 2*f(x/z, y+z, z-x^2 + f(x, x, y))*g(x/z, y+z, z-x^2+ f(x, x, y)))
+    )
+
+    expect_close(
+    ((f + g)*(f + 1:4 - 2*f*g))(x/z, y+z, z - x^2 + (f - g + f*g)(x, x, y)),
+    (f(x/z,y+z,z - x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y)*g(x,x,y)) + g(x/z, y+z, z - x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y)*g(x, x, y))) * (f(x/z, y+z, z-x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y)*g(x, x, y)) + 1:4 - 2 * f(x/z, y+z, z-x^2 + f(x, x, y) - g(x,x,y) + f(x,x,y)*g(x,x,y))*g(x/z, y+z, z-x^2 + f(x, x, y) - g(x,x,y) + f(x,x,y)*g(x,x,y)))
+    )
+
+    
+
+
+
     
 })
