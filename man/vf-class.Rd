@@ -15,7 +15,7 @@ Objects can be created by calls of the form \code{new("vf", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{x}:}{Object of class \code{"function"}  }
+    \item{\code{.Data}:}{Object of class \code{"function"}  }
   }
 }
 \section{Methods}{
