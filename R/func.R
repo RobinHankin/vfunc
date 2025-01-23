@@ -2,7 +2,6 @@
 
 setClass("vf", slots = c(.Data = "function") )
 
-
 setAs("function", "vf", function(from){new("vf", .Data = from)})  # coerces from function to vf
 setAs("vf", "function", function(from){from@.Data})               # coerces from vf to function
 setAs("numeric", "vf",function(from){"not allowed"})
@@ -147,10 +146,14 @@ setMethod("Compare", signature(e1="function", e2="vf"      ), .vf.vf.compare )
 setMethod("Compare", signature(e1="vf"      , e2="ANY"     ), .vf.ANY.compare)
 setMethod("Compare", signature(e1="ANY"     , e2="vf"      ), .ANY.vf.compare)
 
-`comp` <- function(f,g){as.vf(function(...){as.function(f)(as.function(g)(...))})}
-`%o%`  <- function(f,g){comp(f,g)}
+Sin <- as.vf(function(x){sin(x)})
+Cos <- as.vf(function(x){cos(x)})
+Tan <- as.vf(function(x){tan(x)})
+Log <- as.vf(function(x){log(x)})
+Exp <- as.vf(function(x){exp(x)})
 
-
-sin <- as.vf(function(x){.Primitive("sin")})
-setMethod("sin","vf", function(x){as.vf(function(o){base::sin(x(o))})})
-cos <- as.vf(function(x){base::cos(x)})
+setMethod("sin","vf", function(x){as.vf(function(o){Sin(x(o))})})
+setMethod("cos","vf", function(x){as.vf(function(o){Cos(x(o))})})
+setMethod("tan","vf", function(x){as.vf(function(o){Tan(x(o))})})
+setMethod("log","vf", function(x){as.vf(function(o){Log(x(o))})})
+setMethod("exp","vf", function(x){as.vf(function(o){Exp(x(o))})})

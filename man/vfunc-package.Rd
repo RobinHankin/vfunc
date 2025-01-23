@@ -25,9 +25,8 @@ Maintainer: \packageMaintainer{vfunc}
 
 \examples{
 f <- as.vf(function(x){x^2})
-g <- as.vf(sin)
 
-f+g
+f + Sin
 
-as.function(f*g)(1:4)
+as.function(f*Sin + Exp)(1:4)
 }

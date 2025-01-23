@@ -18,6 +18,6 @@ Returns an object of class \code{vf}.
 }
 \author{Robin K. S. Hankin}
 \examples{
-as.vf(sin)
-as.vf(cos) + as.vf(\(p){p^3})
+as.vf(\(x)x^2)
+Sin + as.vf(\(p){p^3})
 }
