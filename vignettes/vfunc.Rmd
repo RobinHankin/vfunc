@@ -140,12 +140,24 @@ example we have
 Sin
 ```
 
-This construction allows one to use things like
+This construction allows one to define composite functions such as
 
 ```{r}
-j <- Cos + Exp + 3
-k <- Sin + Sin(Cos(Exp)) * Tan(Log)
-(j + k/j)(pi/5)
+j <- as.vf(function(x,y){Cos(x) + Sin(x-y)})
+k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
 ```
+
+Then compare
+
+```{r}
+(j+k)(Sin, Cos+Exp)(Sin+Tan)(0.4)
+```
+
+with
+
+```{r}
+j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+```
+
 
 ## References
