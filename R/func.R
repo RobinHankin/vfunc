@@ -17,15 +17,15 @@ setMethod("as.vf", signature(x = "numeric"), function(x){as(x, "vf")})
 `.vf.negative`   <- function(e1){as.vf(function(...){ -as.function(e1)(...)})}
 `.vf.reciprocal` <- function(e1){as.vf(function(...){1/as.function(e1)(...)})}
 
-`.vf.vf.add`   <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + as.function(e2)(...)})}
-`.vf.vf.mult`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * as.function(e2)(...)})}
-`.vf.vf.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ as.function(e2)(...)})}
+`.vf.vf.add`   <- function(e1, e2){as.vf(function(...){e1(...) + e2(...)})}
+`.vf.vf.mult`  <- function(e1, e2){as.vf(function(...){e1(...) * e2(...)})}
+`.vf.vf.power` <- function(e1, e2){as.vf(function(...){e1(...) ^ e2(...)})}
 
-`.vf.ANY.add`  <- function(e1, e2){as.vf(function(...){as.function(e1)(...) + e2})}
-`.vf.ANY.mult` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) * e2})}
+`.vf.ANY.add`  <- function(e1, e2){as.vf(function(...){e1(...) + e2})}
+`.vf.ANY.mult` <- function(e1, e2){as.vf(function(...){e1(...) * e2})}
 
-`.vf.ANY.power` <- function(e1, e2){as.vf(function(...){as.function(e1)(...) ^ e2})}
-`.ANY.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ as.function(e2)(...)})}
+`.vf.ANY.power` <- function(e1, e2){as.vf(function(...){e1(...) ^ e2})}
+`.ANY.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ e2(...)})}
 
 `.vf.vf.arith` <- function(e1,e2){ # e1: vf, e2: vf
     e1 <- as.vf(e1)
