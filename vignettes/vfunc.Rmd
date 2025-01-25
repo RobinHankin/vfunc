@@ -150,7 +150,7 @@ k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
 Then compare
 
 ```{r}
-(j+k)(Sin, Cos+Exp)(Sin+Tan)(0.4)
+(j+k)(Sin, Cos + Exp)(Sin + Tan)(0.4)
 ```
 
 with
@@ -158,6 +158,9 @@ with
 ```{r}
 j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
 ```
+
+# Conclusions
+
 
 
 ## References
