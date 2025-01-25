@@ -27,6 +27,21 @@ setMethod("as.vf", signature(x = "numeric"), function(x){as(x, "vf")})
 `.vf.ANY.power` <- function(e1, e2){as.vf(function(...){e1(...) ^ e2})}
 `.ANY.vf.power` <- function(e1, e2){as.vf(function(...){e1 ^ e2(...)})}
 
+power_vf_integer <- function (x, n){
+    stopifnot(length(n) == 1)
+    stopifnot(n == round(n))
+    stopifnot(n >= 0)
+    if (n == 0){
+        return(as.vf(function(x){x}))
+    } else if (n == 1){
+        return(x)
+    } else {
+        out <- x
+        for(i in seq_len(n)){out <- out(x)}
+        return(out)
+    }
+}
+
 `.vf.vf.arith` <- function(e1,e2){ # e1: vf, e2: vf
     e1 <- as.vf(e1)
     e2 <- as.vf(e2)
