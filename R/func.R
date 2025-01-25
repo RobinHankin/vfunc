@@ -12,6 +12,7 @@ setMethod("as.function", signature(x = "vf"), function(x){as(x, "function")})
 setGeneric("as.vf", function(x){standardGeneric("as.vf")})
 setMethod("as.vf", signature(x = "function"), function(x){as(x, "vf")})
 setMethod("as.vf", signature(x = "vf"), function(x){x})
+setMethod("as.vf", signature(x = "numeric"), function(x){as(x, "vf")})
 
 `.vf.negative`   <- function(e1){as.vf(function(...){ -as.function(e1)(...)})}
 `.vf.reciprocal` <- function(e1){as.vf(function(...){1/as.function(e1)(...)})}
@@ -216,4 +217,3 @@ setMethod("gamma"   , "vf", function(x){as.vf(function(o){   Gamma(x(o))})})
 setMethod("lgamma"  , "vf", function(x){as.vf(function(o){  Lgamma(x(o))})})
 setMethod("digamma" , "vf", function(x){as.vf(function(o){ Digamma(x(o))})})
 setMethod("trigamma", "vf", function(x){as.vf(function(o){Trigamma(x(o))})})
-
