@@ -1,4 +1,4 @@
-export("as.function", "as.vf", "power_vf_integer",
+export("as.function", "as.vf", "pow",
        "Abs", "Sign", "Sqrt", "Ceiling", "Floor", "Trunc", "Cummax",
        "Cummin", "Cumprod", "Cumsum", "Log", "Log10", "Log2", "Log1p",
        "Acos", "Acosh", "Asin", "Asinh", "Atan", "Atanh", "Exp",
