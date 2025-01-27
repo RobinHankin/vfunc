@@ -1,0 +1,166 @@
+---
+title: "Function factorization with the `vfunc` package"
+author: "Robin K. S. Hankin"
+output: html_vignette
+bibliography: vfunc.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{The vfunc package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# The `vfunc` package
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(rmarkdown.html_vignette.check_title = FALSE)
+library("vfunc")
+set.seed(1)
+```
+
+```{r out.width='20%', out.extra='style="float:right; padding:10px"',echo=FALSE}
+knitr::include_graphics(system.file("help/figures/vfunc.png", package = "vfunc"))
+```
+
+To cite the `vfunc` package in publications please use [@rcore2024].
+In mathematics, given two functions
+$f,g\colon\mathbb{R}\longrightarrow\mathbb{R}$, it is natural to
+define $f+g$ as the function that maps $x\in\mathbb{R}$ to
+$f(x)+g(x)$.  However, in base R [@rcore2024] this does not work:
+
+```{r}
+f <- function(x){x^2}
+g <- function(x){1/(1-x)}
+# f+g
+```
+
+The `vfunc` package furnishes some ways to accomplish this.
+
+```{r}
+f <- as.vf(f)
+g <- as.vf(g)
+f+g
+```
+
+Above, we coerce `f` and `g` to objects of `S4` class `vf` [for
+"virtual function"].  Such objects have `Arith` methods defined and
+may be combined arithmetically; for example addition is dispatched to
+
+```
+function(e1, e2){as.vf(function(...){e1(...) + e2(...)})}
+```
+
+The `vf` class has a single `.Data` slot of type `"function"` which
+means that objects of this class inherit much of the behaviour of base
+class `function`; above, we see that `e1` and `e2` may be executed
+with their argument list directly.  In practice this means that `f+g`
+behaves as intended:
+
+```{r}
+(f+g)(1:10)
+```
+
+The advantages of such idiom fall in to two main categories.  Firstly,
+code can become considerably more compact; and secondly one can guard
+against a wide class of hard-to-find bugs.  Now consider `f()` and
+`g()` to be trivariate functions, each taking three arguments, say,
+
+
+```{r}
+f <- function(x,y,z){x + x*y - x/z}
+g <- function(x,y,z){x^2 - z}
+```
+
+and $x=1.2$, $y=1.7$, $z=4.3$.  Given this, we wish to calculate
+
+$$(f(x,y,z) + g(x,y,z))(f(x,y,z) + 4 - 2f(x,y,z)g(x,y,z)).$$
+
+How would one code up such an expression in R?  The standard way would be
+
+```{r}	  
+ x <- 1.2
+ y <- 1.7
+ z <- 4.3		
+(f(x,y,z) + g(x,y,z))*(f(x,y,z) + 4 - 2*f(x,y,z)*g(x,y,z))
+```
+
+Note the repeated specification of argument list `(x,y,z)`, repeated
+here five times.  Now use the `vfunc` package:
+
+
+```{r}
+f <- as.vf(f)
+g <- as.vf(g)
+((f + g)*(f + 4 - 2*f*g))(x,y,z)
+```
+
+See how the package allows one to "factorize'' the argument list so
+it appears once, leading to more compact code.  It is also arguably
+less error-prone, as the following example illustrates.  Consider
+
+
+$$
+f(x+z,y+z,f(x,x,y)-g(x,x,y)) + g(x+z, y+z,f(x,x,y)-g(x,x,y))
+$$
+
+
+(such expressions arise in the study of dynamical systems).  Note that
+functions $f$ and $g$ are to be evaluated with two distinct sets of
+arguments at different levels of nesting, namely $(x,x,y)$ at the
+inner level and $(x+z,y+z,f(x,x,y)-g(x,x,y)$ at the outer.  Standard R
+idiom would be
+
+
+```{r}
+f(x+z, y+z, f(x, x, y) - g(x, x, y)) + g(x+z, y+z, f(x, x, y) - g(x, x, y))
+```
+
+The author can attest that finding bugs in such expressions can be
+difficult [it is easy to mistype `(x,x,y)` in one of its apparitions,
+and very hard to spot it].  However, `vfunc` idiom would be
+
+```{r}
+(f+g)(x+z, y+z, (f-g)(x, x, y))
+```
+
+which is certainly shorter, arguably neater and at least the author
+finds such constructions considerably less error-prone.
+
+## Note on primitive functions
+
+The R language includes a number of primitive functions as `S4` Math
+generics, including the trig functions such as `sin()`, and a few
+others such as the cumulative sum `cumsum()`.  These functions are
+quite deep-seated and cannot easily be modified to work with objects
+of class `vf`.  The package uses capitalization.  Using `sin()` as an
+example we have
+
+```{r}
+Sin
+```
+
+This construction allows one to define composite functions such as
+
+```{r}
+j <- as.vf(function(x,y){Cos(x) + Sin(x-y)})
+k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
+```
+
+Then compare
+
+```{r}
+(j+k)(Sin, Cos + Exp)(Sin + Tan)(0.4)
+```
+
+with
+
+```{r}
+j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+```
+
+# Conclusions
+
+
+
+## References

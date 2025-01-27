@@ -1,0 +1,16 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd
+^\.travis\.yml$
+^vignettes/*.html$
+^.devcontainer$
+^codecov\.yml$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^inst/arxiv
+^inst/sticker
+^.circleci/config.yml$
+^CODE_OF_CONDUCT.md$
+^CONTRIBUTING.md$

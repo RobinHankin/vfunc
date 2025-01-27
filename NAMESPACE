@@ -1,10 +1,13 @@
-export("as.function", "as.vf", "Sin", "Cos", "Tan", "Log", "Exp")
-exportMethods(
-    "as.function",
-    "as.vf"
-)
-exportClasses(
-    "vf" 
-)
+export("as.function", "as.vf", "pow",
+       "Abs", "Sign", "Sqrt", "Ceiling", "Floor", "Trunc", "Cummax",
+       "Cummin", "Cumprod", "Cumsum", "Log", "Log10", "Log2", "Log1p",
+       "Acos", "Acosh", "Asin", "Asinh", "Atan", "Atanh", "Exp",
+       "Expm1", "Cos", "Cosh", "Cospi", "Sin", "Sinh", "Sinpi", "Tan",
+       "Tanh", "Tanpi", "Gamma", "Lgamma", "Digamma", "Trigamma"
+       )
+
+exportMethods("as.function", "as.vf")
+
+exportClasses("vf")
 
 importFrom("methods", "as", "new")
