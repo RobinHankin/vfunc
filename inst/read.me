@@ -1,0 +1,32 @@
+File vfunc_arxiv.Rnw will eventually be basically the same as the
+vignette (vignettes/vfunc.Rmd) but modified for arxiv.
+
+Weave  'vfunc_arxiv.Rnw' with something like
+
+R CMD Sweave vfunc_arxiv.Rnw
+
+(that takes about a minute).  This will create vfunc_arxiv.tex.
+
+To create the pdf, you will need to latex vfunc_arxiv.tex.  For this,
+you will need a couple of auxiliary files:
+
+* arxiv.sty from https://github.com/kourgeorge/arxiv-style
+* orcid.pdf, from https://orcid.org/signin
+* vfunc.png, the hexsticker, copied from man/figures
+* Sweave.sty, copied from the R distribution
+* vfunc.bib, copied from vignettes/
+
+Then 
+
+pdflatex vfunc_arxiv
+bibtex vfunc_arxiv
+pdflatex vfunc_arxiv
+pdflatex vfunc_arxiv
+
+will create vfunc_arxiv.pdf and vfunc_arxiv.bbl
+
+These files will have to be uploaded to arxiv for it to process
+vfunc_arxiv.tex; remember to upload vfunc_arxiv.bbl as well.
+
+NOTE: the tex file, vfunc_arxiv.tex, is NOT under version control.
+
