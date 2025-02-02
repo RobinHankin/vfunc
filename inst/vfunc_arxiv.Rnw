@@ -228,7 +228,7 @@ fun <- as.vf(function(x){x^2 + 2})
 @
 
 Above, we see package idiom being used to evaluate $\sin^2(0.32) + 3 +
-\sin(0.32^2+3) - 3\cdot\sin 0.32\cdot(0.32^2+3)$.  In base R:
+\sin(0.32^2+2) - 3\cdot\sin 0.32\cdot(0.32^2+2)$.  In base R:
 
 <<seeeval>>=
 fun(sin(0.32)) + sin(fun(0.32)) - 3*sin(0.32)*fun(0.32)
