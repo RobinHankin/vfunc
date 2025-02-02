@@ -1,3 +1,4 @@
+
 % -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
 
 
@@ -87,17 +88,22 @@ Error in f + g : non-numeric argument to binary operator
 \end{Soutput}
 \end{Schunk}
 
-Above, ``{\tt f + g}'' returns an error because {\tt f} and {\tt g}
-are objects of {\tt S4} class {\tt function}.  It is not possible to
-define {\tt Arith} group {\tt S4} methods [in this case, addition,
-{\tt +}] so such idiom operates as desired, because the {\tt function}
-class is {\em sealed} in {\tt S4}: the definition of new methods is
+Above, there is a reasonably clear expectation for ``{\tt f + g}'': it
+should give a function that returns the sum of {\tt f()} and {\tt
+g()}; something like {\tt function(x)\{f(x) + g(x)\}}.  However, it
+returns an error because {\tt f} and {\tt g} are objects of {\tt S4}
+class {\tt function}, which do not have an addition method.  Further,
+it is not possible to define {\tt Arith} group {\tt S4} methods [in
+this case, overloading addition, ``{\tt +}''] so that this idiom
+operates as desired.  This is because the {\tt function} class is {\em
+sealed} in {\tt S4}: the definition of new methods for it is
 prohibited.  Here I present the {\tt vfunc} R~\cite{rcore2024} package
 that furnishes appropriate idiom.  It is available on CRAN at
 \url{https://CRAN.R-project.org/package=vfunc}.  The package defines a
-new {\tt S4} class {\tt vf} [for ``virtual function''] which inherits
-from {\tt function}, but for which new methods can be defined.  This
-device furnishes some ways to apply Arithmetic methods for functions.
+new {\tt S4} class {\tt vf} (``virtual function'') which inherits from
+{\tt function}, but for which new methods can be defined.  This device
+furnishes some ways to apply {\tt Arith} methods for functions.  For
+example:
 
 <<hidden_because_previous_chunk_was_not_executed, echo=FALSE>>=
 f <- function(x){x^2}
@@ -128,8 +134,7 @@ practice this means that {\tt f+g} behaves as intended, and suggests
 other ways in which it can be used:
 
 <<showfplusginvfunc>>=
-h <- f + g
-(h + function(x){x^3})(1:10)
+(f + 4*g - f*g)(1:10)
 @
 
 The advantages of such idiom fall in to two main categories.  Firstly,
@@ -166,10 +171,9 @@ g <- as.vf(g)
 ((f + g)*(f + 4 - 2*f*g))(x,y,z)
 @
 
-See how the package allows one to "factorize'' the argument list so it
-appears once, leading to more compact code.  It is also arguably less
-error-prone, as the following example illustrates.  Consider
-
+See how the package allows one to ``factorize'' the argument list so
+it appears once, leading to more compact code.  It is also arguably
+less error-prone, as the following example illustrates.  Consider
 
 $$
 f(x+z,y+z,f(x,x,y)-g(x,x,y)) + g(x+z, y+z,f(x,x,y)-g(x,x,y))
@@ -216,24 +220,41 @@ vf}.  Taking {\tt sin()} as an example we have
 vfunc::Sin
 @
 
+Then we may, for example, combine trig functions with user-defined functions:
+
+<<combinetriganduser>>=
+fun <- as.vf(function(x){x^2 + 2})
+(fun(Sin) + Sin(fun) - 3*Sin*fun)(0.32)
+@
+
+Above, we see package idiom being used to evaluate $\sin^2(0.32) + 3 +
+\sin(0.32^2+3) - 3\cdot\sin 0.32\cdot(0.32^2+3)$.  In base R:
+
+<<seeeval>>=
+fun(sin(0.32)) + sin(fun(0.32)) - 3*sin(0.32)*fun(0.32)
+@
+
 This construction allows one to define composite functions such as
 
 <<defcomposite>>=
 j <- as.vf(function(x,y){Cos(x) + Sin(x-y)})
 k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
+l <- as.vf(function(x,y){Sin(x/2) + x^2   })
 @
 
-Then compare
+(note that functions {\tt j()}, {\tt k()} and {\tt l()} are
+bivariate).  Then compare
 
 <<looktwo1>>=
-(j+k)(Sin, Cos + Exp)(Sin + Tan)(0.4)
+(j + k + l)(Sin, Cos + Exp)(Sin + Tan)(0.4)
 @
 
 with
 
 <<looktwo2>>=
 j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
-k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
+l(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
 @
 
 \section{Conclusions}
