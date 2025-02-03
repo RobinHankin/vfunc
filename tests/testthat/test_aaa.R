@@ -45,7 +45,8 @@ test_that("Test suite aaa.R",{
 
     f <- as.vf(function(x,y,z){x + x*y - x/z})
     g <- as.vf(function(x,y,z){x + Sin(x-y) + z})
-
+    h <- as.vf(function(x,y,z){x + f(x, y, g(x, y, x+z))})  # not currently used
+    
     x <- 1.2
     y <- 1.7
     z <- 4.3
@@ -79,8 +80,6 @@ test_that("Test suite aaa.R",{
    (f(x/z, y+z, z - x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y) * g(x, x, y)) + g(x/z, y+z, z - x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y) * g(x, x, y))) * (f(x/z, y+z, z-x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y) * g(x, x, y)) + 1:4 - 2 * f(x/z, y+z, z-x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y) * g(x, x, y)) * g(x/z, y+z, z-x^2 + f(x, x, y) - g(x, x, y) + f(x, x, y)*g(x, x, y)))
    )
     
-    
-
 
 
     
