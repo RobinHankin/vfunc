@@ -90,20 +90,26 @@ Error in f + g : non-numeric argument to binary operator
 
 Above, there is a reasonably clear expectation for ``{\tt f + g}'': it
 should give a function that returns the sum of {\tt f()} and {\tt
-g()}; something like {\tt function(x)\{f(x) + g(x)\}}.  However, it
+  g()}; something like {\tt function(x)\{f(x) + g(x)\}}.  However, it
 returns an error because {\tt f} and {\tt g} are objects of {\tt S4}
 class {\tt function}, which do not have an addition method.  Further,
 it is not possible to define {\tt Arith} group {\tt S4} methods [in
-this case, overloading addition, ``{\tt +}''] so that this idiom
+  this case, overloading addition, ``{\tt +}''] so that this idiom
 operates as desired.  This is because the {\tt function} class is {\em
-sealed} in {\tt S4}: the definition of new methods for it is
+  sealed} in {\tt S4}: the definition of new methods for it is
 prohibited.  Here I present the {\tt vfunc} R~\cite{rcore2024} package
 that furnishes appropriate idiom.  It is available on CRAN at
 \url{https://CRAN.R-project.org/package=vfunc}.  The package defines a
 new {\tt S4} class {\tt vf} (``virtual function'') which inherits from
 {\tt function}, but for which new methods can be defined.  This device
-furnishes some ways to apply {\tt Arith} methods for functions.  For
-example:
+furnishes some ways to apply {\tt Arith} methods for functions.  
+
+\section{The package in use}
+
+The package is designed so that objects of class {\tt vf} operate as
+functions but are subject to arithmetic operations, which are executed
+transparently.  For example:
+
 
 <<hidden_because_previous_chunk_was_not_executed, echo=FALSE>>=
 f <- function(x){x^2}
@@ -206,6 +212,28 @@ one can be sure that both {\tt f()} and {\tt g()} are called with
 identical arguments at each of the two levels in the expression, as
 the arguments appear only once.
 
+\subsection{Overloading}
+
+Looking again at the method for {\tt vf} addition, viz
+
+<<lookagain, asis=TRUE,echo=FALSE>>=
+function(e1, e2){as.vf(function(...){e1(...) + e2(...)})}
+@
+
+we see the {\tt +} operator is used to sum the return values of {\tt
+  e1()} and {\tt e2()}.  There is no reason that this operator cannot
+itself be overloaded, and the {\tt vfunc} package works transparently
+if this is the case, with either {\tt S3} or {\tt S4}.  Taking the
+{\tt onion} package~\cite{hankin2006_onion} as an example:
+
+<<sprayexamp>>=
+library("onion")
+options("show_onions_compactly" = TRUE)
+f <- as.vf(function(x,y){x + x*y})
+g <- as.vf(function(x,y){x^2 + y})
+(f + g - f*g)(1 + Hj,Hk)
+@ 
+
 \section{Primitive functions}
 
 The R language includes a number of primitive functions as {\tt S4}
@@ -246,18 +274,46 @@ l <- as.vf(function(x,y){Sin(x/2) + x^2   })
 bivariate).  Then compare
 
 <<looktwo1>>=
-(j + k + l)(Sin, Cos + Exp)(Sin + Tan)(0.4)
+(j + k + l)(Sin + Log, Cos + Exp)(Sin + Tan)(0.4)
 @
 
-with
+with the one-stage idiom which reads:
+
+<<echo=FALSE,print=FALSE>>=
+j(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
+k(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
+l(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+@
 
 <<looktwo2>>=
-j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
-k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+
-l(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+j(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) +
+exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)),
+cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+ l(sin(sin(0.4) + tan(0.4)) +
+log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
 @
 
+and the multi-stage idiom:
+
+<<looktwo3>>=
+A <- function(x,y){j(x,y) + k(x,y) + l(x,y)}
+B <- function(x){sin(x) + log(x)}
+C <- function(x){cos(x) + exp(x)}
+D <- function(x){sin(x) + tan(x)}
+x <- 0.4
+A(B(D(x)), C(D(x)))
+@ 
+
+See how the one-stage idiom is very long, and the multi-stage idiom is
+opaque [and nevertheless has repeated instances of {\tt (x,y)} and
+  {\tt x}].
+
 \section{Conclusions}
+
+The {\tt vfunc} package allows functions to be ``factorized'', that
+is, {\tt f(x) + g(x)} to be re-written {\tt(f + g)(x)}.  This allows
+for concise idiom and eliminates a certain class of coding errors.
+The package also allows for recursive application of such ideas.
+Further work might include
 
 
 \bibliographystyle{apalike}
