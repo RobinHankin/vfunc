@@ -121,14 +121,54 @@ Trigamma(x)
     \code{function}, or \code{vf}}
 }
 \details{
-To appear
+
+The reason for this rather untransparent device is that primitive
+functions such as \code{sin()} behave somewhat differently from other
+functions.   We have:
+
+\preformatted{
+Sin <- as.vf(function(x){sin(x)})
+setMethod("sin", "vf", function(x){as.vf(function(o){Sin(x(o))})})
+}
+
+We define \code{Sin()} to be an object of class \code{vf}; the call to
+\code{setMethod()} ensures that \code{Sin(f)} operates as intended.
+
 }
 \value{
 Given a numeric, return a numeric; given a \code{vf}, return a \code{vf}
 }
 \author{Robin K. S. Hankin}
 \note{
-Notes here to be added
+
+Note that \dQuote{\code{sin <- as.vf(sin)}} does not work as desired,
+  giving a runtime error; trying to get round this with things like
+  \dQuote{\code{sin <- as.vf(function(x)sin)}} and similar means that
+  \dQuote{\code{sin(3)}} does not work.
+
+There is no way to inform all \code{vf} objects that, if used as a
+function with an argument of a primitive such as \code{sin}, to return
+another \code{vf} object---and not to try and evaluate \dQuote{f(sin)},
+which fails:
+
+\preformatted{
+f <- as.vf(function(x){x^2 + 1})
+f(Sin)
+#> An object of class "vf"
+#> function (...) 
+#> {
+#>     e1(...) + e2
+#> }
+#> <bytecode: 0x6065e7c8a900>
+#> <environment: 0x6065e7c8a548>
+f(sin)
+#> Error in x^2: non-numeric argument to binary operator
+}
+
+Above, we see \code{f(sin)} returning an error (it tries to evaluate
+\dQuote{\code{sin^2 + 1}}).  Observe that \dQuote{\code{Sin^2 + 1}} is
+perfectly OK, for \code{Sin} is a virtual function.
+
 }
 \examples{
 
