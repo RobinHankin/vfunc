@@ -29,7 +29,7 @@ $f,g\colon\mathbb{R}\longrightarrow\mathbb{R}$, it is natural to
 define $f+g$ as the function that maps $x\in\mathbb{R}$ to
 $f(x)+g(x)$.  However, in base R [@rcore2024] this does not work:
 
-```{r}
+```{r doesnotwork}
 f <- function(x){x^2}
 g <- function(x){1/(1-x)}
 # f+g
@@ -37,7 +37,7 @@ g <- function(x){1/(1-x)}
 
 The `vfunc` package furnishes some ways to accomplish this.
 
-```{r}
+```{r accompvf}
 f <- as.vf(f)
 g <- as.vf(g)
 f+g
@@ -67,7 +67,7 @@ against a wide class of hard-to-find bugs.  Now consider `f()` and
 `g()` to be trivariate functions, each taking three arguments, say,
 
 
-```{r}
+```{r devtriv}
 f <- function(x,y,z){x + x*y - x/z}
 g <- function(x,y,z){x^2 - z}
 ```
@@ -89,7 +89,7 @@ Note the repeated specification of argument list `(x,y,z)`, repeated
 here five times.  Now use the `vfunc` package:
 
 
-```{r}
+```{r usevfnice}
 f <- as.vf(f)
 g <- as.vf(g)
 ((f + g)*(f + 4 - 2*f*g))(x,y,z)
@@ -112,7 +112,7 @@ inner level and $(x+z,y+z,f(x,x,y)-g(x,x,y)$ at the outer.  Standard R
 idiom would be
 
 
-```{r}
+```{r standid}
 f(x+z, y+z, f(x, x, y) - g(x, x, y)) + g(x+z, y+z, f(x, x, y) - g(x, x, y))
 ```
 
@@ -120,7 +120,7 @@ The author can attest that finding bugs in such expressions can be
 difficult [it is easy to mistype `(x,x,y)` in one of its apparitions,
 and very hard to spot it].  However, `vfunc` idiom would be
 
-```{r}
+```{r idiomfplusg}
 (f+g)(x+z, y+z, (f-g)(x, x, y))
 ```
 
@@ -136,26 +136,26 @@ quite deep-seated and cannot easily be modified to work with objects
 of class `vf`.  The package uses capitalization.  Using `sin()` as an
 example we have
 
-```{r}
+```{r showsinfunc}
 Sin
 ```
 
 This construction allows one to define composite functions such as
 
-```{r}
+```{r defjk}
 j <- as.vf(function(x,y){Cos(x) + Sin(x-y)})
 k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
 ```
 
 Then compare
 
-```{r}
+```{r usejk}
 (j+k)(Sin, Cos + Exp)(Sin + Tan)(0.4)
 ```
 
 with
 
-```{r}
+```{r jklonglong}
 j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
 ```
 
