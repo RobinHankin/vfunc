@@ -98,7 +98,17 @@ capitalized, as in <code>Sin()</code>, <code>Log()</code>, etc.</p>
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>To appear</p>
+
+
+<p>The reason for this rather untransparent device is that primitive
+functions such as <code><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin()</a></code> behave somewhat differently from other
+functions.   We have:</p>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="va">Sin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="kw">setMethod</span><span class="op">(</span><span class="st">"sin"</span>, <span class="st">"vf"</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">o</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/Math.html">Sin</a></span><span class="op">(</span><span class="fu">x</span><span class="op">(</span><span class="va">o</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+
+<p>We define <code>Sin()</code> to be an object of class <code>vf</code>; the call to
+<code>setMethod()</code> ensures that <code>Sin(f)</code> operates as intended.</p>
     </div>
     <div id="value">
     <h2>Value</h2>
@@ -110,7 +120,32 @@ capitalized, as in <code>Sin()</code>, <code>Log()</code>, etc.</p>
     </div>
     <div id="note">
     <h2>Note</h2>
-    <p>Notes here to be added</p>
+
+
+<p>Note that “<code>sin &lt;- as.vf(sin)</code>” does not work as desired,
+  giving a runtime error; trying to get round this with things like
+  “<code>sin &lt;- as.vf(function(x)sin)</code>” and similar means that
+  “<code>sin(3)</code>” does not work.</p>
+<p>There is no way to inform all <code>vf</code> objects that, if used as a
+function with an argument of a primitive such as <code>sin</code>, to return
+another <code>vf</code> object—and not to try and evaluate “f(sin)”,
+which fails:</p>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu">f</span><span class="op">(</span><span class="va">Sin</span><span class="op">)</span></span>
+<span><span class="co">#&gt; An object of class "vf"</span></span>
+<span><span class="co">#&gt; function (...)</span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     e1(...) + e2</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x6065e7c8a900&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x6065e7c8a548&gt;</span></span>
+<span><span class="fu">f</span><span class="op">(</span><span class="va">sin</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in x^2: non-numeric argument to binary operator</span></span></code></pre></div>
+
+<p>Above, we see <code>f(sin)</code> returning an error (it tries to evaluate
+“<code>sin^2 + 1</code>”).  Observe that “<code>Sin^2 + 1</code>” is
+perfectly OK, for <code>Sin</code> is a virtual function.</p>
     </div>
 
     <div id="ref-examples">
@@ -122,8 +157,8 @@ capitalized, as in <code>Sin()</code>, <code>Log()</code>, etc.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     e1(...) + e2(...)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x56003cec5d60&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x56003cec6188&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55573a05a0f0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55573a05a5c0&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">(</span><span class="va">Sin</span> <span class="op">+</span> <span class="va">Exp</span><span class="op">)</span><span class="op">(</span><span class="fl">.02232</span><span class="op">)</span> ,<span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.02232</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.02232</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.044889 1.044889</span>
