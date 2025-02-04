@@ -23,24 +23,53 @@ set.seed(1)
 knitr::include_graphics(system.file("help/figures/vfunc.png", package = "vfunc"))
 ```
 
-To cite the `vfunc` package in publications please use [@rcore2024].
+To cite the `vfunc` package in publications please use @rcore2024.
+
 In mathematics, given two functions
 $f,g\colon\mathbb{R}\longrightarrow\mathbb{R}$, it is natural to
-define $f+g$ as the function that maps $x\in\mathbb{R}$ to
-$f(x)+g(x)$.  However, in base R [@rcore2024] this does not work:
+define $f+g$ as the function that maps $x\in\mathbb{R}$ to $f(x) +
+g(x)$.  However, in base R, objects of class `function` do not
+have arithmetic methods defined, so idiom such as `f + g`
+returns an error, even though it has a perfectly reasonable
+expectation.  The `vfunc package` offers this functionality.
+Other similar features are provided, which lead to compact and
+readable idiom.  A wide class of coding bugs is eliminated.
 
-```{r doesnotwork}
+# Introduction
+
+Consider the following R session:
+```{r error=TRUE}
 f <- function(x){x^2}
 g <- function(x){1/(1-x)}
-# f+g
+f + g
 ```
 
-The `vfunc` package furnishes some ways to accomplish this.
+Above, there is a reasonably clear expectation for `f + g`: it should
+give a function that returns the sum of `f()` and `g()`; something
+like `function(x)\{f(x) + g(x)}`.  However, it returns an error
+because `f` and `g` are objects of `S4` class `function`, which do not
+have an addition method.  Further, it is not possible to define
+`Arith` group `S4` methods [in this case, overloading addition] so
+that this idiom operates as desired.  This is because the `function`
+class is _sealed_ in `S4`: the definition of new methods for it is
+prohibited.  Here I present the `vfunc` R package that furnishes
+appropriate idiom.  The package defines a new `S4` class `vf`
+("virtual function") which inherits from `function`, but for which new
+methods can be defined.  This device furnishes some ways to
+apply `Arith` methods for functions.
 
-```{r accompvf}
+# The package in use
+
+The package is designed so that objects of class `vf` operate as
+functions but are subject to arithmetic operations, which are executed
+transparently.  For example:
+
+
+```{r vfuncfplusg}
+library("vfunc")
 f <- as.vf(f)
 g <- as.vf(g)
-f+g
+(f + g)(1:10)
 ```
 
 Above, we coerce `f` and `g` to objects of `S4` class `vf` [for
@@ -51,23 +80,23 @@ may be combined arithmetically; for example addition is dispatched to
 function(e1, e2){as.vf(function(...){e1(...) + e2(...)})}
 ```
 
-The `vf` class has a single `.Data` slot of type `"function"` which
+The `vf` class has a single `.Data` slot of type `function` which
 means that objects of this class inherit much of the behaviour of base
 class `function`; above, we see that `e1` and `e2` may be executed
 with their argument list directly.  In practice this means that `f+g`
-behaves as intended:
+behaves as intended, and suggests other ways in which it can be used:
 
-```{r}
-(f+g)(1:10)
+```{r showfplusginvfunc}
+(f + 4*g - f*g)(1:10)
 ```
 
 The advantages of such idiom fall in to two main categories.  Firstly,
 code can become considerably more compact; and secondly one can guard
 against a wide class of hard-to-find bugs.  Now consider `f()` and
-`g()` to be trivariate functions, each taking three arguments, say,
+`g()` to be trivariate functions, each taking three arguments,
+say,
 
-
-```{r devtriv}
+```{r}
 f <- function(x,y,z){x + x*y - x/z}
 g <- function(x,y,z){x^2 - z}
 ```
@@ -78,7 +107,7 @@ $$(f(x,y,z) + g(x,y,z))(f(x,y,z) + 4 - 2f(x,y,z)g(x,y,z)).$$
 
 How would one code up such an expression in R?  The standard way would be
 
-```{r}	  
+```{r standardway}
  x <- 1.2
  y <- 1.7
  z <- 4.3		
@@ -89,16 +118,15 @@ Note the repeated specification of argument list `(x,y,z)`, repeated
 here five times.  Now use the `vfunc` package:
 
 
-```{r usevfnice}
+```{r usevfunc}
 f <- as.vf(f)
 g <- as.vf(g)
 ((f + g)*(f + 4 - 2*f*g))(x,y,z)
 ```
 
-See how the package allows one to "factorize'' the argument list so
+See how the package allows one to ''factorize'' the argument list so
 it appears once, leading to more compact code.  It is also arguably
 less error-prone, as the following example illustrates.  Consider
-
 
 $$
 f(x+z,y+z,f(x,x,y)-g(x,x,y)) + g(x+z, y+z,f(x,x,y)-g(x,x,y))
@@ -112,55 +140,120 @@ inner level and $(x+z,y+z,f(x,x,y)-g(x,x,y)$ at the outer.  Standard R
 idiom would be
 
 
-```{r standid}
-f(x+z, y+z, f(x, x, y) - g(x, x, y)) + g(x+z, y+z, f(x, x, y) - g(x, x, y))
+```{r compexample}
+f(x + z, y + z, f(x, x, y) - g(x, x, y)) + g(x + z, y + z, f(x, x, y) - g(x, x, y))
 ```
 
 The author can attest that finding bugs in such expressions can be
-difficult [it is easy to mistype `(x,x,y)` in one of its apparitions,
-and very hard to spot it].  However, `vfunc` idiom would be
+difficult [it is easy to mistype `(x,x,y)` in one of its
+occurences, yet difficult to detect the error].  However, `vfunc`
+idiom would be
 
-```{r idiomfplusg}
-(f+g)(x+z, y+z, (f-g)(x, x, y))
+```{r fgxzyz}
+(f + g)(x + z, y + z, (f - g)(x, x, y))
 ```
 
 which is certainly shorter, arguably neater and at least the author
-finds such constructions considerably less error-prone.
+finds such constructions considerably less error-prone.  In this form,
+one can be sure that both `f()` and `g()` are called with
+identical arguments at each of the two levels in the expression, as
+the arguments appear only once.
 
-## Note on primitive functions
+## Overloading
+
+Looking again at the method for `vf` addition, viz
+
+```
+function(e1, e2){as.vf(function(...){e1(...) + e2(...)})}
+```
+
+we see the `+` operator is used to sum the return values of `e1()` and
+`e2()`.  There is no reason that this operator cannot itself be
+overloaded, and the `vfunc` package works transparently if this is the
+case, with either `S3` or `S4`.  Taking the `onion`
+package [@hankin2006_onion] as an example:
+
+```{r sprayexamp}
+library("onion")
+options("show_onions_compactly" = TRUE)
+f <- as.vf(function(x,y){x + x*y})
+g <- as.vf(function(x,y){x^2 + y})
+(f + g - f*g)(1 + Hj,Hk)
+```
+
+## Primitive functions
 
 The R language includes a number of primitive functions as `S4` Math
 generics, including the trig functions such as `sin()`, and a few
 others such as the cumulative sum `cumsum()`.  These functions are
 quite deep-seated and cannot easily be modified to work with objects
-of class `vf`.  The package uses capitalization.  Using `sin()` as an
-example we have
+of class `vf`.  The package defines capitalized versions of primitive
+functions to operate with other objects of class `vf`.  Taking `sin()`
+as an example we have
 
-```{r showsinfunc}
-Sin
+```{r showsin}
+vfunc::Sin
+```
+
+Then we may, for example, combine trig functions with user-defined functions:
+
+```{r combinetriganduser}
+fun <- as.vf(function(x){x^2 + 2})
+(fun(Sin) + Sin(fun) - 3*Sin*fun)(0.32)
+```
+
+Above, we see package idiom being used to evaluate $\sin^2(0.32) + 3 +
+\sin(0.32^2+2) - 3\cdot\sin 0.32\cdot(0.32^2+2)$.  In base R:
+
+```{r seeeval}
+fun(sin(0.32)) + sin(fun(0.32)) - 3*sin(0.32)*fun(0.32)
 ```
 
 This construction allows one to define composite functions such as
 
-```{r defjk}
+```{r defcomposite}
 j <- as.vf(function(x,y){Cos(x) + Sin(x-y)})
 k <- as.vf(function(x,y){Tan(x) + Log(x+y)})
+l <- as.vf(function(x,y){Sin(x/2) + x^2   })
 ```
 
-Then compare
+(note that functions `j()`, `k()` and `l()` are bivariate).  Then
+compare
 
-```{r usejk}
-(j+k)(Sin, Cos + Exp)(Sin + Tan)(0.4)
+```{r looktwo1}
+(j + k + l)(Sin + Log, Cos + Exp)(Sin + Tan)(0.4)
 ```
 
-with
+with the one-stage idiom which reads:
 
-```{r jklonglong}
-j(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
+
+```{r looktwo2}
+j(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) +
+exp(sin(0.4) + tan(0.4))) + k(sin(sin(0.4) + tan(0.4)) + log(sin(0.4) + tan(0.4)),
+cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))+ l(sin(sin(0.4) + tan(0.4)) +
+log(sin(0.4) + tan(0.4)), cos(sin(0.4) + tan(0.4)) + exp(sin(0.4) + tan(0.4)))
 ```
+
+and the multi-stage idiom:
+
+```{r looktwo3}
+A <- function(x,y){j(x,y) + k(x,y) + l(x,y)}
+B <- function(x){sin(x) + log(x)}
+C <- function(x){cos(x) + exp(x)}
+D <- function(x){sin(x) + tan(x)}
+x <- 0.4
+A(B(D(x)), C(D(x)))
+```
+
+See how the one-stage idiom is very long, and the multi-stage idiom is
+opaque [and nevertheless has repeated instances of `(x,y)` and `x`].
 
 # Conclusions
 
+The `vfunc` package allows functions to be ''factorized'', that
+is, `f(x) + g(x)` to be re-written `(f + g)(x)`.  This allows
+for concise idiom and eliminates a certain class of coding errors.
+The package also allows for recursive application of such ideas.
 
 
-## References
+
