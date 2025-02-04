@@ -1,4 +1,4 @@
-test_that("Test suite aac",{  # mostly testing Sin, etc
+test_that("Test suite aac",{  # testing arith ANY vf methods
 
     expect_close <- function(x,y){expect_true(all(abs(x-y) < 1e-8))}
 
@@ -7,6 +7,23 @@ test_that("Test suite aac",{  # mostly testing Sin, etc
         usebr <- c(vf1(x) + vf2(x),vf1(vf2(x)), vf2(vf1(x)), vf2(vf2(x)), vf2(x) + vf2(x))
         expect_close(usevf,usebr)
     }
+
+    testANYmethod <- function(vf1,val,x){
+        usevf <- c(
+        (vf1 + val)(x), (vf1 * val)(x), (vf1 - val)(x), (vf1 / val)(x),
+        (val + vf1)(x), (val * vf1)(x), (val - vf1)(x), (val / vf1)(x)
+        )
+
+        usebr <- c(
+        vf1(x) + val(x), vf1(x) * val(x), vf1(x) - val(x), vf1(x) / val(x),
+        val(x) + vf1(x), val(x) * vf1(x), val(x) - vf1(x), val(x) / vf1(x)
+        )
+
+        expect_close(usevf,usebr)
+    }
+
+            
+           
     
     f <- as.vf(function(x){x^2 + 1})
     g <- as.vf(function(x){1/x})
