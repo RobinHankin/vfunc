@@ -4,15 +4,16 @@ setClass("vf", slots = c(.Data = "function") )
 
 setAs("function", "vf", function(from){new("vf", .Data = from)})  # coerces from function to vf
 setAs("vf", "function", function(from){from@.Data})               # coerces from vf to function
-setAs("numeric", "vf", function(from){"not allowed"})
-
+setAs("ANY", "vf", function(from){as.vf(function(x){from})})
 
 setMethod("as.function", signature(x = "vf"), function(x){as(x, "function")})
 
 setGeneric("as.vf", function(x){standardGeneric("as.vf")})
+
 setMethod("as.vf", signature(x = "function"), function(x){as(x, "vf")})
 setMethod("as.vf", signature(x = "vf"), function(x){x})
-setMethod("as.vf", signature(x = "numeric"), function(x){as(x, "vf")})
+setMethod("as.vf", signature(x = "ANY"), function(x){as(x, "vf")})
+
 
 `.vf.negative`   <- function(e1){as.vf(function(...){ -as.function(e1)(...)})}
 `.vf.reciprocal` <- function(e1){as.vf(function(...){1/as.function(e1)(...)})}
