@@ -1,4 +1,4 @@
-test_that("Test suite aab",{  # mostly testing Sin, etc
+test_that("Test suite aac",{  # mostly testing Sin, etc
 
     expect_close <- function(x,y){expect_true(all(abs(x-y) < 1e-8))}
 
