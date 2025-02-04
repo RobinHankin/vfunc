@@ -128,8 +128,8 @@ functions.   We have:</p>
   “<code>sin(3)</code>” does not work.</p>
 <p>There is no way to inform all <code>vf</code> objects that, if used as a
 function with an argument of a primitive such as <code>sin</code>, to return
-another <code>vf</code> object—and not to try and evaluate “f(sin)”,
-which fails:</p>
+another <code>vf</code> object—and not to try and evaluate
+“<code>f(sin)</code>”, which fails:</p>
 <div class="sourceCode"><pre><code><span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="fu">f</span><span class="op">(</span><span class="va">Sin</span><span class="op">)</span></span>
@@ -157,8 +157,8 @@ perfectly OK, for <code>Sin</code> is a virtual function.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     e1(...) + e2(...)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556631774958&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556631774f40&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5591d54d42f8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5591d54ce9d0&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">(</span><span class="va">Sin</span> <span class="op">+</span> <span class="va">Exp</span><span class="op">)</span><span class="op">(</span><span class="fl">.02232</span><span class="op">)</span> ,<span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.02232</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.02232</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.044889 1.044889</span>
