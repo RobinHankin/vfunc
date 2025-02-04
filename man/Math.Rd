@@ -148,8 +148,8 @@ Note that \dQuote{\code{sin <- as.vf(sin)}} does not work as desired,
 
 There is no way to inform all \code{vf} objects that, if used as a
 function with an argument of a primitive such as \code{sin}, to return
-another \code{vf} object---and not to try and evaluate \dQuote{f(sin)},
-which fails:
+another \code{vf} object---and not to try and evaluate
+\dQuote{\code{f(sin)}}, which fails:
 
 \preformatted{
 f <- as.vf(function(x){x^2 + 1})
