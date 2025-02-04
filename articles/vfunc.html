@@ -76,55 +76,84 @@ Hankin</h4>
 </h2>
 <p><img src="..%2F..%2F..%2F_temp%2FLibrary%2Fvfunc%2Fhelp%2Ffigures%2Fvfunc.png" width="20%" style="float:right; padding:10px"></p>
 <p>To cite the <code>vfunc</code> package in publications please use
-<span class="citation">(<a href="#ref-rcore2024">R Core Team
-2024</a>)</span>. In mathematics, given two functions
+<span class="citation">R Core Team (<a href="#ref-rcore2024">2024</a>)</span>.</p>
+<p>In mathematics, given two functions
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>,</mo><mi>g</mi><mo>:</mo><mi>ℝ</mi><mo>→</mo><mi>ℝ</mi></mrow><annotation encoding="application/x-tex">f,g\colon\mathbb{R}\longrightarrow\mathbb{R}</annotation></semantics></math>,
 it is natural to define
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>+</mo><mi>g</mi></mrow><annotation encoding="application/x-tex">f+g</annotation></semantics></math>
 as the function that maps
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><mi>ℝ</mi></mrow><annotation encoding="application/x-tex">x\in\mathbb{R}</annotation></semantics></math>
 to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x)+g(x)</annotation></semantics></math>.
-However, in base R <span class="citation">(<a href="#ref-rcore2024">R
-Core Team 2024</a>)</span> this does not work:</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x) +
+g(x)</annotation></semantics></math>. However, in base R, objects of
+class <code>function</code> do not have arithmetic methods defined, so
+idiom such as <code>f + g</code> returns an error, even though it has a
+perfectly reasonable expectation. The <code>vfunc package</code> offers
+this functionality. Other similar features are provided, which lead to
+compact and readable idiom. A wide class of coding bugs is
+eliminated.</p>
+</div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>Consider the following R session:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">}</span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">x</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="co"># f+g</span></span></code></pre></div>
-<p>The <code>vfunc</code> package furnishes some ways to accomplish
-this.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">+</span> <span class="va">g</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in f + g: non-numeric argument to binary operator</span></span></code></pre>
+<p>Above, there is a reasonably clear expectation for
+<code>f + g</code>: it should give a function that returns the sum of
+<code>f()</code> and <code>g()</code>; something like
+<code>function(x)\{f(x) + g(x)}</code>. However, it returns an error
+because <code>f</code> and <code>g</code> are objects of <code>S4</code>
+class <code>function</code>, which do not have an addition method.
+Further, it is not possible to define <code>Arith</code> group
+<code>S4</code> methods [in this case, overloading addition] so that
+this idiom operates as desired. This is because the
+<code>function</code> class is <em>sealed</em> in <code>S4</code>: the
+definition of new methods for it is prohibited. Here I present the
+<code>vfunc</code> R package that furnishes appropriate idiom. The
+package defines a new <code>S4</code> class <code>vf</code> (“virtual
+function”) which inherits from <code>function</code>, but for which new
+methods can be defined. This device furnishes some ways to apply
+<code>Arith</code> methods for functions.</p>
+</div>
+<div class="section level2">
+<h2 id="the-package-in-use">The package in use<a class="anchor" aria-label="anchor" href="#the-package-in-use"></a>
+</h2>
+<p>The package is designed so that objects of class <code>vf</code>
+operate as functions but are subject to arithmetic operations, which are
+executed transparently. For example:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"vfunc"</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
-<span><span class="va">f</span><span class="op">+</span><span class="va">g</span></span></code></pre></div>
-<pre><code><span><span class="co">## An object of class "vf"</span></span>
-<span><span class="co">## function (...) </span></span>
-<span><span class="co">## {</span></span>
-<span><span class="co">##     e1(...) + e2(...)</span></span>
-<span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x555928b5a620&gt;</span></span>
-<span><span class="co">## &lt;environment: 0x555928b5a1f8&gt;</span></span></code></pre>
+<span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1]      Inf  3.00000  8.50000 15.66667 24.75000 35.80000 48.83333 63.85714</span></span>
+<span><span class="co">##  [9] 80.87500 99.88889</span></span></code></pre>
 <p>Above, we coerce <code>f</code> and <code>g</code> to objects of
 <code>S4</code> class <code>vf</code> [for “virtual function”]. Such
 objects have <code>Arith</code> methods defined and may be combined
 arithmetically; for example addition is dispatched to</p>
 <pre><code><span><span class="kw">function</span><span class="op">(</span><span class="va">e1</span>, <span class="va">e2</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">{</span><span class="fu">e1</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">+</span> <span class="fu">e2</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">}</span></span></code></pre>
 <p>The <code>vf</code> class has a single <code>.Data</code> slot of
-type <code>"function"</code> which means that objects of this class
+type <code>function</code> which means that objects of this class
 inherit much of the behaviour of base class <code>function</code>;
 above, we see that <code>e1</code> and <code>e2</code> may be executed
 with their argument list directly. In practice this means that
-<code>f+g</code> behaves as intended:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">f</span><span class="op">+</span><span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1]      Inf  3.00000  8.50000 15.66667 24.75000 35.80000 48.83333 63.85714</span></span>
-<span><span class="co">##  [9] 80.87500 99.88889</span></span></code></pre>
+<code>f+g</code> behaves as intended, and suggests other ways in which
+it can be used:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="fl">4</span><span class="op">*</span><span class="va">g</span> <span class="op">-</span> <span class="va">f</span><span class="op">*</span><span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1]       NaN   4.00000  11.50000  20.00000  30.25000  42.40000  56.50000</span></span>
+<span><span class="co">##  [8]  72.57143  90.62500 110.66667</span></span></code></pre>
 <p>The advantages of such idiom fall in to two main categories. Firstly,
 code can become considerably more compact; and secondly one can guard
 against a wide class of hard-to-find bugs. Now consider <code>f()</code>
 and <code>g()</code> to be trivariate functions, each taking three
 arguments, say,</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span>,<span class="va">z</span><span class="op">)</span><span class="op">{</span><span class="va">x</span> <span class="op">+</span> <span class="va">x</span><span class="op">*</span><span class="va">y</span> <span class="op">-</span> <span class="va">x</span><span class="op">/</span><span class="va">z</span><span class="op">}</span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span>,<span class="va">z</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="va">z</span><span class="op">}</span></span></code></pre></div>
 <p>and
@@ -135,7 +164,7 @@ Given this, we wish to calculate</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>4</mn><mo>−</mo><mn>2</mn><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">(f(x,y,z) + g(x,y,z))(f(x,y,z) + 4 - 2f(x,y,z)g(x,y,z)).</annotation></semantics></math></p>
 <p>How would one code up such an expression in R? The standard way would
 be</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1.2</span></span>
 <span> <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">1.7</span></span>
 <span> <span class="va">z</span> <span class="op">&lt;-</span> <span class="fl">4.3</span>       </span>
@@ -144,12 +173,12 @@ be</p>
 <p>Note the repeated specification of argument list
 <code>(x,y,z)</code>, repeated here five times. Now use the
 <code>vfunc</code> package:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
 <span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="va">g</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="fl">4</span> <span class="op">-</span> <span class="fl">2</span><span class="op">*</span><span class="va">f</span><span class="op">*</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span>,<span class="va">z</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2.411975</span></span></code></pre>
-<p>See how the package allows one to “factorize’’ the argument list so
+<p>See how the package allows one to ‘’factorize’’ the argument list so
 it appears once, leading to more compact code. It is also arguably less
 error-prone, as the following example illustrates. Consider</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
@@ -166,64 +195,124 @@ levels of nesting, namely
 at the inner level and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(x+z,y+z,f(x,x,y)-g(x,x,y)</annotation></semantics></math>
 at the outer. Standard R idiom would be</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">f</span><span class="op">(</span><span class="va">x</span><span class="op">+</span><span class="va">z</span>, <span class="va">y</span><span class="op">+</span><span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span><span class="op">+</span><span class="va">z</span>, <span class="va">y</span><span class="op">+</span><span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">f</span><span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, <span class="va">y</span> <span class="op">+</span> <span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, <span class="va">y</span> <span class="op">+</span> <span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 64.04918</span></span></code></pre>
 <p>The author can attest that finding bugs in such expressions can be
 difficult [it is easy to mistype <code>(x,x,y)</code> in one of its
-apparitions, and very hard to spot it]. However, <code>vfunc</code>
-idiom would be</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">f</span><span class="op">+</span><span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="va">x</span><span class="op">+</span><span class="va">z</span>, <span class="va">y</span><span class="op">+</span><span class="va">z</span>, <span class="op">(</span><span class="va">f</span><span class="op">-</span><span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+occurences, yet difficult to detect the error]. However,
+<code>vfunc</code> idiom would be</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, <span class="va">y</span> <span class="op">+</span> <span class="va">z</span>, <span class="op">(</span><span class="va">f</span> <span class="op">-</span> <span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 64.04918</span></span></code></pre>
 <p>which is certainly shorter, arguably neater and at least the author
-finds such constructions considerably less error-prone.</p>
+finds such constructions considerably less error-prone. In this form,
+one can be sure that both <code>f()</code> and <code>g()</code> are
+called with identical arguments at each of the two levels in the
+expression, as the arguments appear only once.</p>
 <div class="section level3">
-<h3 id="note-on-primitive-functions">Note on primitive functions<a class="anchor" aria-label="anchor" href="#note-on-primitive-functions"></a>
+<h3 id="overloading">Overloading<a class="anchor" aria-label="anchor" href="#overloading"></a>
+</h3>
+<p>Looking again at the method for <code>vf</code> addition, viz</p>
+<pre><code><span><span class="kw">function</span><span class="op">(</span><span class="va">e1</span>, <span class="va">e2</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">{</span><span class="fu">e1</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">+</span> <span class="fu">e2</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">}</span></span></code></pre>
+<p>we see the <code>+</code> operator is used to sum the return values
+of <code>e1()</code> and <code>e2()</code>. There is no reason that this
+operator cannot itself be overloaded, and the <code>vfunc</code> package
+works transparently if this is the case, with either <code>S3</code> or
+<code>S4</code>. Taking the <code>onion</code> package <span class="citation">(<a href="#ref-hankin2006_onion">Hankin
+2006</a>)</span> as an example:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/RobinHankin/onion" class="external-link">"onion"</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"show_onions_compactly"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="va">x</span> <span class="op">+</span> <span class="va">x</span><span class="op">*</span><span class="va">y</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">f</span> <span class="op">+</span> <span class="va">g</span> <span class="op">-</span> <span class="va">f</span><span class="op">*</span><span class="va">g</span><span class="op">)</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">Hj</span>,<span class="va">Hk</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##         Re </span></span>
+<span><span class="co">## 4+2i+2j-1k</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="primitive-functions">Primitive functions<a class="anchor" aria-label="anchor" href="#primitive-functions"></a>
 </h3>
 <p>The R language includes a number of primitive functions as
 <code>S4</code> Math generics, including the trig functions such as
 <code><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin()</a></code>, and a few others such as the cumulative sum
 <code><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum()</a></code>. These functions are quite deep-seated and cannot
 easily be modified to work with objects of class <code>vf</code>. The
-package uses capitalization. Using <code><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin()</a></code> as an example we
-have</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Sin</span></span></code></pre></div>
+package defines capitalized versions of primitive functions to operate
+with other objects of class <code>vf</code>. Taking <code><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin()</a></code>
+as an example we have</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">vfunc</span><span class="fu">::</span><span class="va"><a href="../reference/Math.html">Sin</a></span></span></code></pre></div>
 <pre><code><span><span class="co">## An object of class "vf"</span></span>
 <span><span class="co">## function (x) </span></span>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     sin(x)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x555927264918&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x5558da78e2f0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:vfunc&gt;</span></span></code></pre>
+<p>Then we may, for example, combine trig functions with user-defined
+functions:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">2</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="fu">fun</span><span class="op">(</span><span class="va">Sin</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/Math.html">Sin</a></span><span class="op">(</span><span class="va">fun</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span><span class="op">*</span><span class="va">Sin</span><span class="op">*</span><span class="va">fun</span><span class="op">)</span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.9769132</span></span></code></pre>
+<p>Above, we see package idiom being used to evaluate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mo>sin</mo><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.32</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>3</mn><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>3</mn><mo>⋅</mo><mo>sin</mo><mn>0.32</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sin^2(0.32) + 3 +
+\sin(0.32^2+2) - 3\cdot\sin 0.32\cdot(0.32^2+2)</annotation></semantics></math>.
+In base R:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">fun</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu">fun</span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span><span class="op">*</span><span class="fu">fun</span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.9769132</span></span></code></pre>
 <p>This construction allows one to define composite functions such
 as</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/Math.html">Cos</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/Math.html">Sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">-</span><span class="va">y</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/Math.html">Tan</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/Math.html">Log</a></span><span class="op">(</span><span class="va">x</span><span class="op">+</span><span class="va">y</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p>Then compare</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">j</span><span class="op">+</span><span class="va">k</span><span class="op">)</span><span class="op">(</span><span class="va">Sin</span>, <span class="va">Cos</span> <span class="op">+</span> <span class="va">Exp</span><span class="op">)</span><span class="op">(</span><span class="va">Sin</span> <span class="op">+</span> <span class="va">Tan</span><span class="op">)</span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 2.135028</span></span></code></pre>
-<p>with</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">j</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">k</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 2.135028</span></span></code></pre>
+<span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/Math.html">Tan</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/Math.html">Log</a></span><span class="op">(</span><span class="va">x</span><span class="op">+</span><span class="va">y</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">l</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.vf.html">as.vf</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="../reference/Math.html">Sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">x</span><span class="op">^</span><span class="fl">2</span>   <span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<p>(note that functions <code><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">j()</a></code>, <code><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">k()</a></code> and
+<code><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">l()</a></code> are bivariate). Then compare</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">j</span> <span class="op">+</span> <span class="va">k</span> <span class="op">+</span> <span class="va">l</span><span class="op">)</span><span class="op">(</span><span class="va">Sin</span> <span class="op">+</span> <span class="va">Log</span>, <span class="va">Cos</span> <span class="op">+</span> <span class="va">Exp</span><span class="op">)</span><span class="op">(</span><span class="va">Sin</span> <span class="op">+</span> <span class="va">Tan</span><span class="op">)</span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 2.545235</span></span></code></pre>
+<p>with the one-stage idiom which reads:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">j</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">k</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">l</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 2.545235</span></span></code></pre>
+<p>and the multi-stage idiom:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">A</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">j</a></span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">k</a></span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/onion/man/Extract.html" class="external-link">l</a></span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">B</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">C</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">D</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">tan</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0.4</span></span>
+<span><span class="fu">A</span><span class="op">(</span><span class="fu">B</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">D</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/zC.html" class="external-link">C</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">D</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 2.545235</span></span></code></pre>
+<p>See how the one-stage idiom is very long, and the multi-stage idiom
+is opaque [and nevertheless has repeated instances of <code>(x,y)</code>
+and <code>x</code>].</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="conclusions">Conclusions<a class="anchor" aria-label="anchor" href="#conclusions"></a>
 </h2>
-<div class="section level3">
-<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h3>
+<p>The <code>vfunc</code> package allows functions to be ‘’factorized’’,
+that is, <code>f(x) + g(x)</code> to be re-written
+<code>(f + g)(x)</code>. This allows for concise idiom and eliminates a
+certain class of coding errors. The package also allows for recursive
+application of such ideas.</p>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-hankin2006_onion" class="csl-entry">
+Hankin, R. K. S. 2006. <span>“Normed Division Algebras with
+<span>R</span>: Introducing the Onion Package.”</span>
+<em><span>R</span> News</em> 6 (2): 49–52.
+</div>
 <div id="ref-rcore2024" class="csl-entry">
 R Core Team. 2024. <em>R: A Language and Environment for Statistical
 Computing</em>. Vienna, Austria: R Foundation for Statistical Computing.
 <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>.
-</div>
 </div>
 </div>
 </div>
