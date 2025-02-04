@@ -20,7 +20,7 @@ test_that("Test suite aac",{  # mostly testing Sin, etc
 
     for(i in seq_along(l1)){
         for(j in seq_along(l2)){
-            testvf(l1[[i]], l2[[i]], 1.1)
+            testvf(l1[[i]], l2[[j]], 1.1)
         }
     }
 
