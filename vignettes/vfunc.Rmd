@@ -46,7 +46,7 @@ f + g
 
 Above, there is a reasonably clear expectation for `f + g`: it should
 give a function that returns the sum of `f()` and `g()`; something
-like `function(x)\{f(x) + g(x)}`.  However, it returns an error
+like `function(x){f(x) + g(x)}`.  However, it returns an error
 because `f` and `g` are objects of `S4` class `function`, which do not
 have an addition method.  Further, it is not possible to define
 `Arith` group `S4` methods [in this case, overloading addition] so
@@ -257,3 +257,4 @@ The package also allows for recursive application of such ideas.
 
 
 
+## References
