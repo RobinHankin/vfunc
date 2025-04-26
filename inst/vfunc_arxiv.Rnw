@@ -313,7 +313,8 @@ The {\tt vfunc} package allows functions to be ``factorized'', that
 is, {\tt f(x) + g(x)} to be re-written {\tt(f + g)(x)}.  This allows
 for concise idiom and eliminates a certain class of coding errors.
 The package also allows for recursive application of such ideas.
-Further work might include
+Further work might include an assessment of the package's
+computational efficiency.
 
 
 \bibliographystyle{apalike}
