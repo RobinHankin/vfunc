@@ -105,7 +105,7 @@ eliminated.</p>
 <p>Above, there is a reasonably clear expectation for
 <code>f + g</code>: it should give a function that returns the sum of
 <code>f()</code> and <code>g()</code>; something like
-<code>function(x)\{f(x) + g(x)}</code>. However, it returns an error
+<code>function(x){f(x) + g(x)}</code>. However, it returns an error
 because <code>f</code> and <code>g</code> are objects of <code>S4</code>
 class <code>function</code>, which do not have an addition method.
 Further, it is not possible to define <code>Arith</code> group
@@ -248,7 +248,7 @@ as an example we have</p>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     sin(x)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a1b4835350&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x555b46f7a9e8&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:vfunc&gt;</span></span></code></pre>
 <p>Then we may, for example, combine trig functions with user-defined
 functions:</p>
@@ -303,6 +303,9 @@ that is, <code>f(x) + g(x)</code> to be re-written
 <code>(f + g)(x)</code>. This allows for concise idiom and eliminates a
 certain class of coding errors. The package also allows for recursive
 application of such ideas.</p>
+<div class="section level3">
+<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-hankin2006_onion" class="csl-entry">
 Hankin, R. K. S. 2006. <span>“Normed Division Algebras with
@@ -313,6 +316,7 @@ Hankin, R. K. S. 2006. <span>“Normed Division Algebras with
 R Core Team. 2024. <em>R: A Language and Environment for Statistical
 Computing</em>. Vienna, Austria: R Foundation for Statistical Computing.
 <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>.
+</div>
 </div>
 </div>
 </div>
