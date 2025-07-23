@@ -75,7 +75,7 @@ Math group generic functions in the \pkg{vfunc} package: trig, exponential,
 log, etc.
 }
 \description{
-The \proglang{S4} \code{Math} group conains 35 functions including
+The \proglang{S4} \code{Math} group contains 35 functions including
 \code{sin()}, \code{log()}, etc.  The \code{vfunc} equivalents are
 capitalized, as in \code{Sin()}, \code{Log()}, etc.
 }

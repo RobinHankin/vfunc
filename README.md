@@ -139,7 +139,7 @@ f(x + z, y + z, f(x, x, y) - g(x, x, y)) + g(x + z, y + z, f(x, x, y) - g(x, x, 
 ```
 
 The author can attest that finding bugs in such expressions can be
-difficult \[it is easy to mistype `(x,x,y)` in one of its occurences,
+difficult \[it is easy to mistype `(x,x,y)` in one of its occurrences,
 yet difficult to detect the error\]. However, `vfunc` idiom would be
 
 ``` r
