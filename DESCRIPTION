@@ -1,10 +1,15 @@
 Package: vfunc
 Type: Package
 Title: Manipulate Virtual Functions
+Authors@R: person(
+	   given=c("Robin", "K. S."),
+	   family="Hankin",
+	   role = c("aut","cre"),
+	   email="hankin.robin@gmail.com",
+	   comment = c(ORCID = "0000-0001-5982-0415"))
 Version: 1.0
 Depends: R (>= 4.2.0)
 Suggests: testthat, knitr, rmarkdown, onion
-Author: Robin K. S. Hankin
 Maintainer: Robin K. S. Hankin <hankin.robin@gmail.com>
 Description: If f <- function(x){x^2} and g <- function(x){x+1} it is a constant source of annoyance that "f+g" is not defined.  Package vfunc allows you to do this. 
 License: GPL-2
