@@ -12,7 +12,8 @@
 
 
 %% just as usual
-\author{Robin K. S. Hankin\\University of Stirling}
+\author{Robin K. S. Hankin\orcid{https://orcid.org/0000-0001-5982-0415}\\
+  University of Stirling}
 %% the \author{} macro specifes a list of authors; use \And to
 %% separate authors and \AND to indicate a new line. 
 
@@ -56,7 +57,7 @@ eliminated.
 %% The address of (at least) one author should be given
 %% in the following format:
 \Address{
-  Robin K. S. Hankin\orcid{https://orcid.org/0000-0001-5982-0415}\\
+  Robin K. S. Hankin\\
   University of Stirling\\
   Scotland\\
   E-mail: \email{hankin.robin@gmail.com}\\
