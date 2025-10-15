@@ -60,8 +60,7 @@ eliminated.
   Robin K. S. Hankin\\
   University of Stirling\\
   Scotland\\
-  E-mail: \email{hankin.robin@gmail.com}\\
-  URL: \url{https://www.aut.ac.nz/profiles/robin-hankin}\\
+  email: \email{hankin.robin@gmail.com}
 }
 
 
