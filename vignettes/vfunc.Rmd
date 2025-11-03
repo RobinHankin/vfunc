@@ -28,7 +28,7 @@ $f,g\colon\mathbb{R}\longrightarrow\mathbb{R}$, it is natural to
 define $f+g$ as the function that maps $x\in\mathbb{R}$ to $f(x) +
 g(x)$.  However, in base R, objects of class `function` do not
 have arithmetic methods defined, so idiom such as `f + g`
-returns an error, even though it has a perfectly reasonable
+returns an error in R, even though it has a perfectly reasonable
 expectation.  The `vfunc package` offers this functionality.
 Other similar features are provided, which lead to compact and
 readable idiom.  A wide class of coding bugs is eliminated.
@@ -44,17 +44,18 @@ f + g
 
 Above, there is a reasonably clear expectation for `f + g`: it should
 give a function that returns the sum of `f()` and `g()`; something
-like `function(x){f(x) + g(x)}`.  However, it returns an error
-because `f` and `g` are objects of `S4` class `function`, which do not
-have an addition method.  Further, it is not possible to define
-`Arith` group `S4` methods [in this case, overloading addition] so
-that this idiom operates as desired.  This is because the `function`
-class is _sealed_ in `S4`: the definition of new methods for it is
-prohibited.  Here I present the `vfunc` R package that furnishes
-appropriate idiom.  The package defines a new `S4` class `vf`
-("virtual function") which inherits from `function`, but for which new
-methods can be defined.  This device furnishes some ways to
-apply `Arith` methods for functions.
+like `function(x){f(x) + g(x)}`; this is defined formally, for
+example, by @spivak1967.  However, it returns an error because `f` and
+`g` are objects of `S4` class `function`, which do not have an
+addition method.  Further, it is not possible to define `Arith` group
+`S4` methods [in this case, overloading addition] so that this idiom
+operates as desired.  This is because the `function` class is _sealed_
+in `S4`: the definition of new methods for it is prohibited.  Here I
+present the `vfunc` R package that furnishes appropriate idiom.  The
+package defines a new `S4` class `vf` ("virtual function") which
+inherits from `function`, but for which new methods can be defined.
+This device furnishes some ways to apply `Arith` methods for
+functions.
 
 # The package in use
 
