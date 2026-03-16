@@ -2,7 +2,7 @@ url: https://robinhankin.github.io/vfunc/
 
 template:
   params:
-    extra_css: https://raw.githubusercontent.com/RobinHankin/workflow/master/pkgdown/extra.css
+    extra_css: https://raw.githubusercontent.com/RobinHankin/workflow/master/pkgdown/extra.css?v=2
 
 development:
   mode: auto
