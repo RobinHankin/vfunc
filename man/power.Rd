@@ -40,13 +40,13 @@ composition.
   }
 \examples{
 
-pow(Sin,5)
+pow(Sin, 5)
 Sin^5
 
 f <- as.vf(function(x){x^2+1})
 
-pow(f + Sin,4)
-pow(f + Sin,4)(2)
+pow(f+Sin, 4)
+pow(f+Sin, 4)(2)
 }
 
 
