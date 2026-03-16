@@ -18,4 +18,6 @@ Description: If f <- function(x){x^2} and g <- function(x){x+1} it is
      implemented.  A wide class of coding bugs is eliminated.
 License: GPL-2
 Imports: methods
+URL: https://github.com/RobinHankin/vfunc, https://robinhankin.github.io/vfunc/
+BugReports: https://github.com/RobinHankin/vfunc/issues
 VignetteBuilder: knitr
