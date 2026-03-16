@@ -1,0 +1,8 @@
+url: https://robinhankin.github.io/vfunc/
+
+template:
+  params:
+    extra_css: https://raw.githubusercontent.com/RobinHankin/workflow/master/pkgdown/extra.css
+
+development:
+  mode: auto
