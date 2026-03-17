@@ -1,0 +1,6 @@
+bibentry(bibtype = "misc",
+         title = "Introducing the vfunc {R} package",
+         author = c(person(c("Robin", "K.", "S."), "Hankin")),
+         year = "2026", publisher = "arXiv",
+         doi = "10.48550/ARXIV.2603.15156"
+         )
