@@ -21,7 +21,8 @@ set.seed(1)
 knitr::include_graphics(system.file("help/figures/vfunc.png", package = "vfunc"))
 ```
 
-To cite the `vfunc` package in publications please use @rcore2024.
+To cite the `vfunc` package in publications please use
+@hankin2026_vfunc_rmd.
 
 In mathematics, given two functions
 $f,g\colon\mathbb{R}\longrightarrow\mathbb{R}$, it is natural to
