@@ -4,10 +4,8 @@
 \alias{as.vf,ANY-method}
 \title{Coerce functions to a virtual function.}
 \description{
-  
   Coerce objects to a virtual function.  Numeric or complex arguments
   are coerced to a constant function.
-
 }
 \usage{
 as.vf(x)
