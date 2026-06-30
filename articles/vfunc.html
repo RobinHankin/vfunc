@@ -88,7 +88,7 @@ it is natural to define
 as the function that maps
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><mi>ℝ</mi></mrow><annotation encoding="application/x-tex">x\in\mathbb{R}</annotation></semantics></math>
 to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x) +
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f(x) +
 g(x)</annotation></semantics></math>. However, in base R, objects of
 class <code>function</code> do not have arithmetic methods defined, so
 idiom such as <code>f + g</code> returns an error in R, even though it
@@ -167,7 +167,7 @@ arguments, say,</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>1.7</mn></mrow><annotation encoding="application/x-tex">y=1.7</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo>=</mo><mn>4.3</mn></mrow><annotation encoding="application/x-tex">z=4.3</annotation></semantics></math>.
 Given this, we wish to calculate</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>4</mn><mo>−</mo><mn>2</mn><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">(f(x,y,z) + g(x,y,z))(f(x,y,z) + 4 - 2f(x,y,z)g(x,y,z)).</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>4</mn><mo>−</mo><mn>2</mn><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">(f(x,y,z) + g(x,y,z))(f(x,y,z) + 4 - 2f(x,y,z)g(x,y,z)).</annotation></semantics></math></p>
 <p>How would one code up such an expression in R? The standard way would
 be</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -187,7 +187,7 @@ be</p>
 <p>See how the package allows one to ‘’factorize’’ the argument list so
 it appears once, leading to more compact code. It is also arguably less
 error-prone, as the following example illustrates. Consider</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
 f(x+z,y+z,f(x,x,y)-g(x,x,y)) + g(x+z, y+z,f(x,x,y)-g(x,x,y))
 </annotation></semantics></math></p>
 <p>(such expressions arise in the study of dynamical systems). Note that
@@ -197,9 +197,9 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
 are to be evaluated with two distinct sets of arguments at different
 levels of nesting, namely
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x,x,y)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x,x,y)</annotation></semantics></math>
 at the inner level and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(x+z,y+z,f(x,x,y)-g(x,x,y)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo>,</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x+z,y+z,f(x,x,y)-g(x,x,y)</annotation></semantics></math>
 at the outer. Standard R idiom would be</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">f</span><span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, <span class="va">y</span> <span class="op">+</span> <span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, <span class="va">y</span> <span class="op">+</span> <span class="va">z</span>, <span class="fu">f</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fu">g</span><span class="op">(</span><span class="va">x</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -254,7 +254,7 @@ as an example we have</p>
 <span><span class="co">## {</span></span>
 <span><span class="co">##     sin(x)</span></span>
 <span><span class="co">## }</span></span>
-<span><span class="co">## &lt;bytecode: 0x55a772e69fd8&gt;</span></span>
+<span><span class="co">## &lt;bytecode: 0x55cede4415e0&gt;</span></span>
 <span><span class="co">## &lt;environment: namespace:vfunc&gt;</span></span></code></pre>
 <p>Then we may, for example, combine trig functions with user-defined
 functions:</p>
@@ -263,7 +263,7 @@ functions:</p>
 <span><span class="op">(</span><span class="fu">fun</span><span class="op">(</span><span class="va">Sin</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/Math.html">Sin</a></span><span class="op">(</span><span class="va">fun</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span><span class="op">*</span><span class="va">Sin</span><span class="op">*</span><span class="va">fun</span><span class="op">)</span><span class="op">(</span><span class="fl">0.32</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.9769132</span></span></code></pre>
 <p>Above, we see package idiom being used to evaluate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mo>sin</mo><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.32</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>3</mn><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>3</mn><mo>⋅</mo><mo>sin</mo><mn>0.32</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sin^2(0.32) + 3 +
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mi mathvariant="normal">sin</mi><mo>⁡</mo></mrow><mn>2</mn></msup><mo stretchy="false" form="prefix">(</mo><mn>0.32</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>3</mn><mo>+</mo><mrow><mi mathvariant="normal">sin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>3</mn><mo>⋅</mo><mrow><mi mathvariant="normal">sin</mi><mo>⁡</mo></mrow><mn>0.32</mn><mo>⋅</mo><mo stretchy="false" form="prefix">(</mo><msup><mn>0.32</mn><mn>2</mn></msup><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\sin^2(0.32) + 3 +
 \sin(0.32^2+2) - 3\cdot\sin 0.32\cdot(0.32^2+2)</annotation></semantics></math>.
 In base R:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
@@ -312,15 +312,15 @@ application of such ideas.</p>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-hankin2006_onion" class="csl-entry">
 Hankin, R. K. S. 2006. <span>“Normed Division Algebras with
 <span>R</span>: Introducing the Onion Package.”</span>
 <em><span>R</span> News</em> 6 (2): 49–52.
 </div>
 <div id="ref-hankin2026_vfunc_rmd" class="csl-entry">
-———. 2026. <span>“Introducing the <span><code>vfunc</code></span>
-<span>R</span> Package.”</span> <a href="https://arxiv.org/abs/2603.15156" class="external-link uri">https://arxiv.org/abs/2603.15156</a>; arXiv. <a href="https://doi.org/10.48550/ARXIV.2603.15156" class="external-link">https://doi.org/10.48550/ARXIV.2603.15156</a>.
+Hankin, R. K. S. 2026. <em>Introducing the
+<span><code>vfunc</code></span> <span>R</span> Package</em>. <a href="https://arxiv.org/abs/2603.15156" class="external-link uri">Https://arxiv.org/abs/2603.15156</a>; arXiv. <a href="https://doi.org/10.48550/ARXIV.2603.15156" class="external-link">https://doi.org/10.48550/ARXIV.2603.15156</a>.
 </div>
 <div id="ref-spivak1967" class="csl-entry">
 Spivak, M. 1965. <em>Calculus</em>. W. A. Benjamin, inc.
